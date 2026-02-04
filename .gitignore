@@ -1,0 +1,9 @@
+assets/
+__pycache__/
+__pycache__/*
+sim_results/
+renderformer/
+*.obj
+*.png
+*.h5
+*.usd
