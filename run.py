@@ -9,7 +9,7 @@ wp.config.verify_cuda = True
 import imageio
 
 from scene_init import *
-from scene_init.materials import materials_range
+from scene_init.materials import materials_range, materials_mapping
 from scene_init.scene_render_info import construct_scene_material_from_materials
 import math
 
@@ -41,13 +41,19 @@ if __name__ == "__main__":
         [
             {
                 'instance_type': 'cube',
-                'cube_param': [0.8, 0.3, 0.8],
-                'material': 'fluid',
+                'cube_param': [0.7, 0.3, 0.7],
+                'material': 'gold',
+                'center': [0.5, 0.25, 0.5]
+            },
+            {
+                'instance_type': 'cube',
+                'cube_param': [0.5, 0.3, 0.5],
+                'material': 'slime',
                 'center': [0.5, 0.5, 0.5]
             }
         ]
     )
-    print(len(instances))
+    # print(len(instances))
     # V = 4/3 * math.pi * r ** 3 / particles
     mpm_solver = MPM_Simulator_WARP(
         particles, 
@@ -83,11 +89,13 @@ if __name__ == "__main__":
 
     directory_to_save = f'./sim_results/{scene_name}'
 
-    num_frames = 24 * 5
+    num_frames = 24
     writer = imageio.get_writer(f'./sim_results/{scene_name}.mp4', fps=24)
 
     scene_materials = construct_scene_material_from_materials(
         materials_range,
+        materials_mapping,
+        instances,
         device=dvc
     )
 

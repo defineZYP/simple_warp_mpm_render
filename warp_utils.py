@@ -19,8 +19,6 @@ class MPMModelStruct:
     E: wp.array(dtype=float)
     nu: wp.array(dtype=float)
     bulk: wp.array(dtype=float)
-    instances: wp.array(dtype=int)
-    materials: wp.array(dtype=int)
     material: int
 
     ######## for plasticity ####
@@ -45,6 +43,9 @@ class MPMModelStruct:
 @wp.struct
 class MPMStateStruct:
     ###### essential #####
+    # instances
+    instances: wp.array(dtype=int)
+    materials: wp.array(dtype=int)
     # particle
     particle_x: wp.array(dtype=wp.vec3)   # current position
     particle_v: wp.array(dtype=wp.vec3)   # particle velocity
@@ -317,7 +318,7 @@ def torch2warp_float(t, copy=False, dtype=warp.types.float32, dvc="cuda:0"):
         dtype=warp.types.float32,
         shape=t.shape[0],
         copy=False,
-        owner=False,
+        # owner=False,
         requires_grad=t.requires_grad,
         # device=t.device.type)
         device=dvc,

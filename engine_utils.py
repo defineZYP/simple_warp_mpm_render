@@ -101,7 +101,8 @@ def add_frame(mpm_solver, video_writer, instances=None, scene_materials=None, de
                     mesh
                 )
                 meshes_ids[i_idx] = mesh.id
-                material_ids[i_idx] = materials_mapping[instance['material']['material']]
+                # material_ids[i_idx] = materials_mapping[instance['material']['material']]
+                material_ids[i_idx] = i_idx
     
     meshes_ids = torch2warp_uint64(meshes_ids)
     material_ids = torch2warp_int32(material_ids)
@@ -122,7 +123,6 @@ def add_frame(mpm_solver, video_writer, instances=None, scene_materials=None, de
 
     # pixels_np = pixels_np.numpy()
     video_writer.append_data(img_as_ubyte(pixels_np))
-
 
 def particle_position_to_ply(mpm_solver, filename):
     # position is (n,3)

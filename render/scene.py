@@ -9,6 +9,8 @@ from .postprocessor import adjust
 @wp.struct
 class HDRImage:
     img: wp.array(dtype=wp.vec3)
+    pdf: wp.array(dtype=float)
+    cdf: wp.array(dtype=float)
     width: int
     height: int
 
@@ -25,6 +27,44 @@ def hdr_process(
         gamma
     )
 
+# def hdr_pdf_cdf_calculation(
+#     img: torch.Tensor,
+#     height: int,
+#     width: int,
+#     device: str,
+# ):
+#     sin_theta = torch.arange(height, device=device).unsqueeze(1).repeat(1, width)
+#     sin_theta = torch.pi * (sin_theta + 0.5) / height
+#     sin_theta = torch.sin(sin_theta)
+#     brightness = torch.tensor([0.299, 0.587, 0.114], device=device)
+#     luminance = torch.matmul(img, brightness)
+#     weights = luminance * sin_theta
+#     weights = weights.reshape(-1)
+#     pdf = weights / torch.sum(weights)
+#     cdf = torch.cumsum(pdf, dim=0)
+#     return pdf, cdf
+
+def hdr_pdf_cdf_calculation(img, height, width, device):
+
+    y = torch.arange(height, device=device)
+
+    theta = torch.pi * (y + 0.5) / height
+    sin_theta = torch.sin(theta)[:, None]
+
+    brightness = torch.tensor([0.299, 0.587, 0.114], device=device)
+    luminance = torch.matmul(img, brightness)
+
+    weights = luminance * sin_theta
+    weights = torch.clamp(weights, min=1e-8)
+
+    weights = weights.reshape(-1)
+
+    pdf = weights / torch.sum(weights)
+    cdf = torch.cumsum(pdf, dim=0)
+    cdf[-1] = 1.0
+
+    return pdf, cdf
+
 @wp.func
 def hdr_texture(
     hdr: HDRImage,
@@ -32,15 +72,22 @@ def hdr_texture(
 ):
     y = int(uv[1] * float(hdr.height))
     x = int(uv[0] * float(hdr.width))
-    y = wp.clamp(y, 0, hdr.height - 1)
-    x = wp.clamp(x, 0, hdr.width - 1)
+    # y = wp.clamp(y, 0, hdr.height - 1)
+    # x = wp.clamp(x, 0, hdr.width - 1)
     return hdr.img[y * hdr.width + x]
 
-
-def init_hdr_image(hdr_path, device='cuda:0'):
-    img = torch.tensor(imageio.v3.imread(hdr_path).astype(np.float32) / 255.0, device=device).squeeze(0)
+def load_hdr_image(hdr_path, device='cuda:0'):
+    img = torch.tensor(imageio.v3.imread(hdr_path).astype(np.float32), device=device).squeeze(0) / 255.0
+    # print(img.shape)
     height = img.shape[0]
     width = img.shape[1]
+    # print(img[1102, 2367])
+    
+    # print(img.max(), img.min())
+    # print(img)
+    return img, height, width
+
+def init_hdr_image(img, height, width, device='cuda:0'):
     img = img.reshape(height * width, 3)
     hdr_img = wp.types.array(
         ptr=img.data_ptr(),

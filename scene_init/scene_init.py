@@ -46,5 +46,6 @@ def init_scene(
     velocity_vec = torch.cat([ball_velocity_vec, cube_velocity_vec], dim=0)
     volumn_vec = torch.cat([ball_volumn_vec, cube_volumn_vec], dim=0)
     instances = ball_instances + cube_instances
+    
     return position_vec, velocity_vec, volumn_vec, instances, total_particles
     

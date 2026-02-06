@@ -9,7 +9,7 @@ from .scene import hdr_texture, HDRImage
 
 from scene_init.scene_render_info import Scene, SceneMaterial
 
-light_quality   = 512.0
+light_quality = 512.0
 ENV_IOR = 1.000277
 VISIBILITY   = 0.000001
 
@@ -25,7 +25,7 @@ def vec3_div(x: wp.vec3, y: wp.vec3):
 def sample_spherical_map(v: wp.vec3):
     v = wp.normalize(v)
     phi = wp.atan2(v.z, v.x)
-    theta = wp.asin(wp.clamp(v.y, -1.0, 1.0))
+    theta = wp.asin(v.y)
     _u = 0.5 + phi * (0.5 / wp.pi)
     _v = 0.5 - theta * (1.0 / wp.pi)
 
@@ -65,6 +65,49 @@ def hemispheric_sampling(
     return wp.normalize(normal)
 
 @wp.func
+def sample_cdf(
+    cdf: wp.array(dtype=float),
+    xi: float
+):
+    lo = int(0)
+    hi = int(cdf.shape[0] - 1)
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if xi <= cdf[mid]:
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo
+
+@wp.func
+def hdr_importance_hemispheric_sampling(
+    hdr_cdf: wp.array(dtype=float),
+    height: int,
+    width: int,
+    n: wp.vec3,
+    tid: int
+):
+    xi = wp.randf(wp.uint32(tid + 42))
+    idx = sample_cdf(hdr_cdf, xi)
+    x = float(idx % width)
+    y = float(idx // width)
+    u = (x + 0.5) / float(width)
+    v = (y + 0.5) / float(height)
+    phi = 2.0 * wp.pi * u
+    theta = wp.pi * v
+
+    sin_theta = wp.sin(theta)
+    wi = wp.vec3(
+        wp.cos(phi) * sin_theta,
+        wp.cos(theta),
+        wp.sin(phi) * sin_theta
+    )
+    if wp.dot(wi, n) < 0.0:
+        wi = -wi
+
+    return wp.normalize(wi)
+
+@wp.func
 def roughness_sampling(
     hemispheric_sample: wp.vec3,
     n: wp.vec3,
@@ -87,22 +130,29 @@ def fresnel_schlick(
 @wp.func
 def calculate_sky_color(
     hdr: HDRImage,
-    ray: Ray,
+    direction: wp.vec3,
 ):
-    uv = sample_spherical_map(ray.direction)
+    uv = sample_spherical_map(direction)
     color = hdr_texture(
         hdr, uv
     )
-    return color
+    return color, uv
 
 @wp.func
 def ray_surface_interaction(
+    hdr_image: HDRImage,
     materials: SceneMaterial,
     material_id: int,
     ray: Ray,
     hit_n: wp.vec3,
     hit_point: wp.vec3,
     hit_sign: float,
+    hdr_cdf: wp.array(dtype=float),
+    height: int,
+    width: int,
+    depth: int,
+    x: float,
+    y: float,
     tid: int
 ):
     albedo = materials.albedo[material_id]
@@ -118,7 +168,16 @@ def ray_surface_interaction(
         normal = -1.0 * hit_n
     # raise NotImplementedError()
 
-    hemispheric_sample = hemispheric_sampling(normal, tid)
+    # hemispheric_sample = hemispheric_sampling(normal, tid)
+
+    hemispheric_sample = hdr_importance_hemispheric_sampling(
+        hdr_cdf,
+        height,
+        width,
+        normal,
+        tid
+    )
+
     roughness_sample = roughness_sampling(
         hemispheric_sample,
         normal,
@@ -134,17 +193,20 @@ def ray_surface_interaction(
     F0  = (eta - 1.0) / (eta + 1.0); F0 *= 2.0*F0
 
     F = fresnel_schlick(NoI, F0, roughness)
+    # if x == 535 and y == 600:
+    #     sky_color, uv = calculate_sky_color(hdr_image, hemispheric_sample)
+    #     print(brightness(sky_color))
 
     if wp.randf(wp.uint32(tid + 520)) < F + metallic or k < 0.0:
         ray.direction = I - 2.0 * NoI * N
         ray.color *= float(wp.dot(ray.direction, normal) > 0.0)
+        # wp.printf(ray.color)
         # ray.color = vec3_mul(ray.color, float(wp.dot(ray.direction, normal) > 0.0))
     elif wp.randf(wp.uint32(tid + 521)) < transmission:
         ray.direction = eta * I - (wp.sqrt(k) + eta * NoI) * N
     else:
         ray.direction = hemispheric_sample
     
-    # ray.color *= albedo
     ray.color = vec3_mul(ray.color, albedo)
     
     ray.origin = hit_point
@@ -170,12 +232,13 @@ def render_frame(
     ray = generate_ray(camera, x, y, tid)
 
     for i in range(512):
-        inv_pdf = wp.exp(float(i) / light_quality)
-        roulette_prob = 1.0 - (1.0 / inv_pdf)
-        rand_value = wp.randf(wp.uint32(tid + 23))
-        if rand_value < roulette_prob:
-            # ray.color *= roulette_prob
-            break
+        if i >= 3:
+            inv_pdf = wp.exp(float(i) / light_quality)
+            roulette_prob = 1.0 - (1.0 / inv_pdf)
+            rand_value = wp.randf(wp.uint32(tid + 23))
+            if rand_value < roulette_prob:
+                ray.color /= roulette_prob
+                break
 
         t_min = float(1000.0)
         hit_n = wp.vec3(0.0, 0.0, 0.0)
@@ -189,30 +252,47 @@ def render_frame(
                 ray.direction,
                 100.0
             )
-            if query.result and query.t < t_min:
+            if query.result and query.t < t_min and query.t > 1e-5:
                 # if hit
                 t_min = query.t
                 hit_n = query.normal
                 hit_sign = query.sign
                 hit_mesh_idx = mesh_idx
-        
+        # if x == 985 and y == 395:
+        #     print(hit_mesh_idx)
         if hit_mesh_idx == -1:
-            # not hit any mesh
-            # ray.color *= wp.vec3(0.7, 0.8, 1.0) # TODO sky color
-            # ray.color = vec3_mul(ray.color, wp.vec3(1.0, 1.0, 1.0))
-            sky_color = calculate_sky_color(hdr_image, ray)
+            sky_color, uv = calculate_sky_color(hdr_image, ray.direction)
+            # if x == 985 and y == 395:
+            #     print(ray.direction)
+            #     print(uv)
+            #     print(sky_color)
+            #     _y = int(uv[1] * float(hdr_image.height))
+            #     _x = int(uv[0] * float(hdr_image.width))
+            #     print(_x)
+            #     print(_y)
+            #     print(hdr_image.img[_y * hdr_image.width + _x])
+            #     _x = 2393
+            #     _y = 826
+            #     print(hdr_image.img[_y * hdr_image.width + _x])
             ray.color = vec3_mul(ray.color, sky_color)
             break
         # or hit a mesh, ray surface interaction
         hit_point = ray.origin + ray.direction * t_min
         material_id = scene.material_ids[hit_mesh_idx]
         ray = ray_surface_interaction(
+            hdr_image=hdr_image,
             materials=materials,
             material_id=material_id,
             ray=ray,
             hit_n=hit_n,
             hit_point=hit_point,
             hit_sign=hit_sign,
+            hdr_cdf=hdr_image.cdf,
+            height=hdr_image.height,
+            width=hdr_image.width,
+            depth=i,
+            x=x,
+            y=y,
             tid=tid
         )
 
@@ -220,8 +300,7 @@ def render_frame(
         # ray.color *= materials.emission[material_id]
         ray.color += vec3_mul(ray.color, materials.emission[material_id])
         visible = brightness(ray.color)
-
-        if intensity < visible or visible < VISIBILITY:
+        if intensity + 1e-5 < visible or visible < VISIBILITY:
             break
     # get the ray, put into buffer
     # wp.atomic_add(

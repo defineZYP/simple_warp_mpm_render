@@ -336,7 +336,7 @@ def p2g_apic_with_stress(state: MPMStateStruct, model: MPMModelStruct, dt: float
     #                       particle_v
     #                       particle_C
     p = wp.tid()
-    i_idx = model.instances[p]
+    i_idx = state.instances[p]
     if state.particle_selection[p] == 0:
         stress = state.particle_stress[p]
         grid_pos = state.particle_x[p] * model.inv_dx
@@ -462,8 +462,8 @@ def compute_stress_from_F_trial(
     state: MPMStateStruct, model: MPMModelStruct, dt: float
 ):
     p = wp.tid()
-    i_idx = model.instances[p]
-    mat = model.materials[i_idx]
+    i_idx = state.instances[p]
+    mat = state.materials[i_idx]
     if state.particle_selection[p] == 0:
         # apply return mapping
         if mat == 1:    # metal

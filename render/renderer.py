@@ -8,7 +8,9 @@ import torch
 
 from .render import render_frame, vec3_mul, vec3_div
 from .camera import Camera
-from .scene import init_hdr_image, hdr_process
+from .scene import load_hdr_image, init_hdr_image, hdr_process, hdr_pdf_cdf_calculation
+
+from warp_utils import torch2warp_float
 
 ACESInputMat = wp.mat33(
     0.59719, 0.35458, 0.04823,
@@ -38,7 +40,7 @@ def RRTAndODTFit(v: wp.vec3):
 
 @wp.func
 def ACESFitted(color: wp.vec3) -> wp.vec3:
-    color = ACESInputMat  @ color
+    color = ACESInputMat @ color
     color = RRTAndODTFit(color)
     color = ACESOutputMat @ color
     # return wp.clamp(color, wp.vec3(0.0, 0.0, 0.0), wp.vec3(1.0, 1.0, 1.0))
@@ -78,15 +80,25 @@ class PathTracingRender:
     ):
         self.cameras = cameras
         self.sample_per_pixel = sample_per_pixel
+        self.build_hdr_images(hdr_path, device)
+
+    def build_hdr_images(self, hdr_path, device):
         self.hdr_images = []
-        for camera in cameras:
-            hdr = init_hdr_image(hdr_path, device=device)
-            wp.launch(
-                kernel=hdr_process,
-                dim=hdr.width * hdr.height,
-                inputs=[hdr, camera.exposure, camera.gamma],
-                device='cuda:0'
-            )
+        img, height, width = load_hdr_image(hdr_path)
+        pdf, cdf = hdr_pdf_cdf_calculation(
+            img, height, width, device
+        )
+        for camera in self.cameras:
+            hdr = init_hdr_image(img.clone(), height, width, device=device)
+            # wp.launch(
+            #     kernel=hdr_process,
+            #     dim=hdr.width * hdr.height,
+            #     inputs=[hdr, camera.exposure, camera.gamma],
+            #     device='cuda:0'
+            # )
+            
+            hdr.pdf = torch2warp_float(pdf.clone(), dvc=device)
+            hdr.cdf = torch2warp_float(cdf.clone(), dvc=device)
             self.hdr_images.append(hdr)
 
     def render(

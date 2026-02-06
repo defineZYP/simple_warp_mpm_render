@@ -10,8 +10,8 @@ def adjust(
 ):
     rgb = rgb * exposure
     rgb = wp.vec3(
-        wp.pow(rgb[0], gamma),
-        wp.pow(rgb[1], gamma),
-        wp.pow(rgb[2], gamma)
+        wp.clamp(wp.pow(rgb[0], 1.0 / gamma), 0.0, 1.0),
+        wp.clamp(wp.pow(rgb[1], 1.0 / gamma), 0.0, 1.0),
+        wp.clamp(wp.pow(rgb[2], 1.0 / gamma), 0.0, 1.0)
     )
     return rgb

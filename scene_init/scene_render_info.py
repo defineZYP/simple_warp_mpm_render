@@ -1,6 +1,8 @@
 import torch
 import warp as wp
 
+from scene_init.materials import get_random_material_from_range
+
 @wp.struct
 class Scene:
     meshes: wp.array(dtype=wp.uint64)
@@ -55,16 +57,22 @@ def torch2warp_float32(t, copy=False, dtype=wp.types.float32, dvc="cuda:0"):
     a.tensor = t
     return a
 
-def construct_scene_material_from_materials(materials, device):
+def construct_scene_material_from_materials(materials, materials_mapping, instances, device):
     scene_material = SceneMaterial()
-    num_materials = len(materials)
+    num_materials = len(instances)
     albedo = torch.zeros((num_materials, 3), dtype=torch.float32, device=device)
     emission = torch.ones((num_materials, 3), dtype=torch.float32, device=device)
     roughness = torch.zeros((num_materials,), dtype=torch.float32, device=device)
     metallic = torch.zeros((num_materials,), dtype=torch.float32, device=device)
     transmission = torch.zeros((num_materials,), dtype=torch.float32, device=device)
     ior = torch.zeros((num_materials, ), dtype=torch.float32, device=device)
-    for idx, material in enumerate(materials):
+    for idx, instance in enumerate(instances):
+        # print(instance)
+        # material = get_random_material_from_range(
+        #     materials[materials_mapping[instance['material']['material']]]
+        # )
+        material = instance['material']
+        print(material)
         if 'albedo' in material:
             albedo[idx, :] = torch.tensor(material['albedo'], dtype=torch.float32, device=device)
         if 'emission' in material:
@@ -83,6 +91,7 @@ def construct_scene_material_from_materials(materials, device):
     scene_material.metallic = torch2warp_float32(metallic, dvc=device)
     scene_material.transmission = torch2warp_float32(transmission, dvc=device)
     scene_material.ior = torch2warp_float32(ior, dvc=device)
+    # raise NotImplementedError()
     return scene_material
 
 if __name__ == "__main__":

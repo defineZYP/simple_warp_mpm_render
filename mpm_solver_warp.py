@@ -40,8 +40,9 @@ class MPM_Simulator_WARP:
         # R = 1.875
         R = 1.325
 
-        # theta = random.uniform(0, 2) * math.pi
-        theta = 1 * math.pi
+        theta = random.uniform(0, 2) * math.pi
+        # theta = 1 * math.pi
+        # theta = 1.0 * math.pi
 
         camera_x = 0.5 + R * math.cos(theta)
         camera_z = 0.5 + R * math.sin(theta)
@@ -55,12 +56,12 @@ class MPM_Simulator_WARP:
                 position=camera_pos,
                 lookat=center,
                 up=(0.0, 1.0, 0.0),
-                fov=45,
+                fov=60,
                 width=1024,
                 height=1024,
                 exposure=1.0,
                 aperture=0.0,
-                focus_distance=0.02,
+                focus_distance=0.1,
                 near=0.1,
                 gamma=2.2
             )
@@ -68,8 +69,8 @@ class MPM_Simulator_WARP:
         
         self.renderer = PathTracingRender(
             cameras=cameras,
-            hdr_path='./assets/HDRi/0.hdr',
-            sample_per_pixel=32
+            hdr_path='./assets/HDRi/10.hdr',
+            sample_per_pixel=8
         )
 
         # self.renderer = RenderFormerRenderingPipeline.from_pretrained(
@@ -160,8 +161,6 @@ class MPM_Simulator_WARP:
         # material is used to switch between different elastoplastic models. 0 is jelly
         # prepare materials
         self.mpm_model.material = 0
-        self.mpm_model.materials = wp.zeros(shape=num_instances, dtype=int, device=device)
-        self.mpm_model.instances = wp.zeros(shape=n_particles, dtype=int, device=device)
 
         self.mpm_model.plastic_viscosity = wp.zeros(
             shape=num_instances, dtype=float, device=device
@@ -214,6 +213,9 @@ class MPM_Simulator_WARP:
         self.mpm_model.grid_v_damping_scale = 1.1  # globally applied
 
         self.mpm_state = MPMStateStruct()
+
+        self.mpm_state.materials = wp.zeros(shape=num_instances, dtype=int, device=device)
+        self.mpm_state.instances = wp.zeros(shape=n_particles, dtype=int, device=device)
 
         self.mpm_state.particle_x = wp.empty(
             shape=n_particles, dtype=wp.vec3, device=device
@@ -478,14 +480,14 @@ class MPM_Simulator_WARP:
             wp.launch(
                 kernel=set_value_to_int_array,
                 dim=end_idx - start_idx,
-                inputs=[self.mpm_model.instances[start_idx: end_idx], i_idx],
+                inputs=[self.mpm_state.instances[start_idx: end_idx], i_idx],
                 device=device,
             )
-            # print(len(self.mpm_model.materials))
+            # print(len(self.mpm_state.materials))
             wp.launch(
                 kernel=set_value_to_int_array,
                 dim=1,
-                inputs=[self.mpm_model.materials[i_idx: i_idx + 1], material_type],
+                inputs=[self.mpm_state.materials[i_idx: i_idx + 1], material_type],
                 device=device,
             )
 
@@ -596,7 +598,7 @@ class MPM_Simulator_WARP:
                 wp.launch(
                     kernel=set_value_to_int_array,
                     dim=self.n_particles,
-                    inputs=[self.mpm_model.materials, 0],
+                    inputs=[self.mpm_state.materials, 0],
                     device=device,
                 )
             elif kwargs["material"] == "metal":
@@ -604,7 +606,7 @@ class MPM_Simulator_WARP:
                 wp.launch(
                     kernel=set_value_to_int_array,
                     dim=self.n_particles,
-                    inputs=[self.mpm_model.materials, 1],
+                    inputs=[self.mpm_state.materials, 1],
                     device=device,
                 )
             elif kwargs["material"] == "sand":
@@ -612,7 +614,7 @@ class MPM_Simulator_WARP:
                 wp.launch(
                     kernel=set_value_to_int_array,
                     dim=self.n_particles,
-                    inputs=[self.mpm_model.materials, 2],
+                    inputs=[self.mpm_state.materials, 2],
                     device=device,
                 )
             elif kwargs["material"] == "foam":
@@ -620,7 +622,7 @@ class MPM_Simulator_WARP:
                 wp.launch(
                     kernel=set_value_to_int_array,
                     dim=self.n_particles,
-                    inputs=[self.mpm_model.materials, 3],
+                    inputs=[self.mpm_state.materials, 3],
                     device=device,
                 )
             elif kwargs["material"] == "snow":
@@ -628,7 +630,7 @@ class MPM_Simulator_WARP:
                 wp.launch(
                     kernel=set_value_to_int_array,
                     dim=self.n_particles,
-                    inputs=[self.mpm_model.materials, 4],
+                    inputs=[self.mpm_state.materials, 4],
                     device=device,
                 )
             elif kwargs["material"] == "plasticine":
@@ -636,7 +638,7 @@ class MPM_Simulator_WARP:
                 wp.launch(
                     kernel=set_value_to_int_array,
                     dim=self.n_particles,
-                    inputs=[self.mpm_model.materials, 5],
+                    inputs=[self.mpm_state.materials, 5],
                     device=device,
                 )
             elif kwargs["material"] == "fluid":
@@ -644,7 +646,7 @@ class MPM_Simulator_WARP:
                 wp.launch(
                     kernel=set_value_to_int_array,
                     dim=self.n_particles,
-                    inputs=[self.mpm_model.materials, 6],
+                    inputs=[self.mpm_state.materials, 6],
                     device=device,
                 )
             else:
@@ -1412,7 +1414,6 @@ class MPM_Simulator_WARP:
                     axis_vertical_scale = translation_scale
                     state.particle_v[p] = axis1_scale * velocity_modifier_params.horizontal_axis_1 + axis2_scale * velocity_modifier_params.horizontal_axis_2 + axis_vertical_scale * velocity_modifier_params.normal 
                         
-
         
         self.particle_velocity_modifiers.append(modify_particle_v_before_p2g)
         
