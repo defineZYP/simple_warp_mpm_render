@@ -136,7 +136,7 @@ if __name__ == "__main__":
     values = np.array(J_lis)
     plt.figure(figsize=(10, 6))
     plt.plot(frames, values, linewidth=2)
-    plt.savefig('./J_curve.png')
+    plt.savefig('./tmp/J_curve.png')
 
     # mpm_solver.renderer.clear()
     del mpm_solver

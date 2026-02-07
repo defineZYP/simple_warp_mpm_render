@@ -3,6 +3,7 @@ __pycache__/
 __pycache__/*
 sim_results/
 renderformer/
+tmp/
 *.obj
 *.png
 *.h5
