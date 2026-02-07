@@ -73,59 +73,6 @@ class MPMStateStruct:
         dtype=wp.vec3, ndim=3
     )  # grid node momentum/velocity, after grid update
 
-
-# for various boundary conditions
-@wp.struct
-class Dirichlet_collider:
-    point: wp.vec3
-    normal: wp.vec3
-    direction: wp.vec3
-
-    start_time: float
-    end_time: float
-
-    friction: float
-    surface_type: int
-
-    velocity: wp.vec3
-
-    threshold: float
-    reset: int
-    index: int
-
-    x_unit: wp.vec3
-    y_unit: wp.vec3
-    radius: float
-    v_scale: float
-    width: float
-    height: float
-    length: float
-    R: float
-
-    size: wp.vec3
-
-    horizontal_axis_1: wp.vec3
-    horizontal_axis_2: wp.vec3
-    half_height_and_radius: wp.vec2
-    
-
-
-@wp.struct
-class Impulse_modifier:
-    # this needs to be changed for each different BC!
-    point: wp.vec3
-    normal: wp.vec3
-    start_time: float
-    end_time: float
-    force: wp.vec3
-    forceTimesDt: wp.vec3
-    numsteps: int
-
-    point: wp.vec3
-    size: wp.vec3
-    mask: wp.array(dtype=int)
-
-
 @wp.struct
 class MPMtailoredStruct:
     # this needs to be changed for each different BC!
@@ -150,38 +97,6 @@ class MPMtailoredStruct:
     normal_plane: wp.vec3
     velocity_plane: wp.vec3
     threshold_plane: float
-
-@wp.struct
-class MaterialParamsModifier:
-    point: wp.vec3
-    size: wp.vec3
-    E: float
-    nu: float
-    density: float
-
-@wp.struct
-class ParticleVelocityModifier:
-    point: wp.vec3
-    normal: wp.vec3
-    half_height_and_radius: wp.vec2
-    rotation_scale: float
-    translation_scale: float
-
-    size: wp.vec3
-
-    horizontal_axis_1: wp.vec3
-    horizontal_axis_2: wp.vec3
-    
-    start_time: float
-
-    end_time: float
-
-    velocity: wp.vec3
-
-    mask: wp.array(dtype=int)
-
-
-
 
 @wp.kernel
 def set_vec3_to_zero(target_array: wp.array(dtype=wp.vec3)):

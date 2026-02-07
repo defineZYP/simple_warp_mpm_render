@@ -579,75 +579,43 @@ def add_damping_via_grid(state: MPMStateStruct, scale: float):
     )
 
 
-@wp.kernel
-def apply_additional_params(
-    state: MPMStateStruct,
-    model: MPMModelStruct,
-    params_modifier: MaterialParamsModifier,
-):
-    p = wp.tid()
-    pos = state.particle_x[p]
-    if (
-        pos[0] > params_modifier.point[0] - params_modifier.size[0]
-        and pos[0] < params_modifier.point[0] + params_modifier.size[0]
-        and pos[1] > params_modifier.point[1] - params_modifier.size[1]
-        and pos[1] < params_modifier.point[1] + params_modifier.size[1]
-        and pos[2] > params_modifier.point[2] - params_modifier.size[2]
-        and pos[2] < params_modifier.point[2] + params_modifier.size[2]
-    ):
-        model.E[p] = params_modifier.E
-        model.nu[p] = params_modifier.nu
-        state.particle_density[p] = params_modifier.density
+# @wp.kernel
+# def apply_additional_params(
+#     state: MPMStateStruct,
+#     model: MPMModelStruct,
+#     params_modifier: MaterialParamsModifier,
+# ):
+#     p = wp.tid()
+#     pos = state.particle_x[p]
+#     if (
+#         pos[0] > params_modifier.point[0] - params_modifier.size[0]
+#         and pos[0] < params_modifier.point[0] + params_modifier.size[0]
+#         and pos[1] > params_modifier.point[1] - params_modifier.size[1]
+#         and pos[1] < params_modifier.point[1] + params_modifier.size[1]
+#         and pos[2] > params_modifier.point[2] - params_modifier.size[2]
+#         and pos[2] < params_modifier.point[2] + params_modifier.size[2]
+#     ):
+#         model.E[p] = params_modifier.E
+#         model.nu[p] = params_modifier.nu
+#         state.particle_density[p] = params_modifier.density
 
 
-@wp.kernel
-def selection_add_impulse_on_particles(
-    state: MPMStateStruct, impulse_modifier: Impulse_modifier
-):
-    p = wp.tid()
-    offset = state.particle_x[p] - impulse_modifier.point
-    if (
-        wp.abs(offset[0]) < impulse_modifier.size[0]
-        and wp.abs(offset[1]) < impulse_modifier.size[1]
-        and wp.abs(offset[2]) < impulse_modifier.size[2]
-    ):
-        impulse_modifier.mask[p] = 1
-    else:
-        impulse_modifier.mask[p] = 0
+# @wp.kernel
+# def selection_enforce_particle_velocity_cylinder(
+#     state: MPMStateStruct, velocity_modifier: ParticleVelocityModifier
+# ):
+#     p = wp.tid()
+#     offset = state.particle_x[p] - velocity_modifier.point
 
+#     vertical_distance = wp.abs(wp.dot(offset, velocity_modifier.normal))
 
-@wp.kernel
-def selection_enforce_particle_velocity_translation(
-    state: MPMStateStruct, velocity_modifier: ParticleVelocityModifier
-):
-    p = wp.tid()
-    offset = state.particle_x[p] - velocity_modifier.point
-    if (
-        wp.abs(offset[0]) < velocity_modifier.size[0]
-        and wp.abs(offset[1]) < velocity_modifier.size[1]
-        and wp.abs(offset[2]) < velocity_modifier.size[2]
-    ):
-        velocity_modifier.mask[p] = 1
-    else:
-        velocity_modifier.mask[p] = 0
-
-
-@wp.kernel
-def selection_enforce_particle_velocity_cylinder(
-    state: MPMStateStruct, velocity_modifier: ParticleVelocityModifier
-):
-    p = wp.tid()
-    offset = state.particle_x[p] - velocity_modifier.point
-
-    vertical_distance = wp.abs(wp.dot(offset, velocity_modifier.normal))
-
-    horizontal_distance = wp.length(
-        offset - wp.dot(offset, velocity_modifier.normal) * velocity_modifier.normal
-    )
-    if (
-        vertical_distance < velocity_modifier.half_height_and_radius[0]
-        and horizontal_distance < velocity_modifier.half_height_and_radius[1]
-    ):
-        velocity_modifier.mask[p] = 1
-    else:
-        velocity_modifier.mask[p] = 0
+#     horizontal_distance = wp.length(
+#         offset - wp.dot(offset, velocity_modifier.normal) * velocity_modifier.normal
+#     )
+#     if (
+#         vertical_distance < velocity_modifier.half_height_and_radius[0]
+#         and horizontal_distance < velocity_modifier.half_height_and_radius[1]
+#     ):
+#         velocity_modifier.mask[p] = 1
+#     else:
+#         velocity_modifier.mask[p] = 0

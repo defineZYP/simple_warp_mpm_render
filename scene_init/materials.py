@@ -139,43 +139,43 @@ sand_material_params_range = {                          # looks similar to jelly
     'ior': 1.55
 }
 
-# gold_material_params_range = {
-#     'material': 'metal',
-#     'E': (7.5e6, 8e6),
-#     'nu': (0.4, 0.45),
-#     'yield_stress': (1e8, 3e8),                         # 黄金美妙的延展性（
-#     'xi': 0.05,
-#     'hardening': 0,
-#     'particle_dense': 2000000.0,
-#     'rpic_damping': 0.5,
-#     'density': 19300.0,
-#     'g': [0.0, -4, 0.0],                                # 默认只受重力，这里没给9.8是为了数值的稳定性
-#     'albedo': [(0.95, 1.00), (0.8, 0.9), (0.0, 0.05)],
-#     'emission': [0.0, 0.0, 0.0],
-#     'roughness': 0.0,
-#     'metallic': (0.95, 1.0),
-#     'transmission': 0.0,
-#     'ior': (0.15, 0.35)                                 # bushiyong
-# }
-
 gold_material_params_range = {
-    'material': 'metal', 
-    'E': 7521505.05, 
-    'nu': 0.4411, 
-    'yield_stress': 182184477.1068, 
-    'xi': 0.05, 
-    'hardening': 0, 
-    'particle_dense': 2000000.0, 
-    'rpic_damping': 0.5, 
-    'density': 19300.0, 
-    'g': [0.0, -4, 0.0], 
-    'albedo': [0.961, 0.8325, 0.0158], 
-    'emission': [0.0, 0.0, 0.0], 
-    'roughness': 0.0, 
-    'metallic': 0.1, 
-    'transmission': 0.0, 
-    'ior': 0.47
+    'material': 'metal',
+    'E': (7.5e6, 8e6),
+    'nu': (0.4, 0.45),
+    'yield_stress': (1e8, 3e8),                         # 黄金美妙的延展性（
+    'xi': 0.05,
+    'hardening': 0,
+    'particle_dense': 2000000.0,
+    'rpic_damping': 0.5,
+    'density': 19300.0,
+    'g': [0.0, -4, 0.0],                                # 默认只受重力，这里没给9.8是为了数值的稳定性
+    'albedo': [(0.95, 1.00), (0.8, 0.9), (0.0, 0.05)],
+    'emission': [0.0, 0.0, 0.0],
+    'roughness': 0.0,
+    'metallic': (0.95, 1.0),
+    'transmission': 0.0,
+    'ior': (0.15, 0.35)                                 # bushiyong
 }
+
+# gold_material_params_range = {
+#     'material': 'metal', 
+#     'E': 7521505.05, 
+#     'nu': 0.4411, 
+#     'yield_stress': 182184477.1068, 
+#     'xi': 0.05, 
+#     'hardening': 0, 
+#     'particle_dense': 2000000.0, 
+#     'rpic_damping': 0.5, 
+#     'density': 19300.0, 
+#     'g': [0.0, -4, 0.0], 
+#     'albedo': [0.961, 0.8325, 0.0158], 
+#     'emission': [0.0, 0.0, 0.0], 
+#     'roughness': 0.0, 
+#     'metallic': 0.1, 
+#     'transmission': 0.0, 
+#     'ior': 0.47
+# }
 
 silver_material_params_range = {
     'material': 'metal',
@@ -196,24 +196,26 @@ silver_material_params_range = {
     'ior': (0.15, 0.35)                                 # bushiyong
 }
 
-iron_material_params_range = {
-    'material': 'metal',
-    'E': (2e7, 2.1e7),
-    'nu': (0.29, 0.34),
-    'yield_stress': (2.5e8, 2.6e8),                         # 黄金美妙的延展性（
-    'xi': 0.01,
-    'hardening': 1.0,
-    'particle_dense': 2000000.0,
-    'rpic_damping': 0.2,
-    'density': 7870.0,
-    'g': [0.0, -4, 0.0],                                # 默认只受重力，这里没给9.8是为了数值的稳定性
-    'albedo': [(0.45, 0.50), (0.45, 0.5), (0.45, 0.5)],
-    'emission': [0.0, 0.0, 0.0],
-    'roughness': (0.25, 0.65),
-    'metallic': (0.85, 1.0),
-    'transmission': 0.0,
-    'ior': (0.15, 0.35)                                 # bushiyong
-}
+iron_material_params_range = {'material': 'metal', 'E': 20630840.721, 'nu': 0.3237, 'yield_stress': 256841489.8631, 'xi': 0.01, 'hardening': 1.0, 'particle_dense': 2000000.0, 'rpic_damping': 0.2, 'density': 7870.0, 'g': [0.0, -4, 0.0], 'albedo': [0.4925, 0.4782, 0.4601], 'emission': [0.0, 0.0, 0.0], 'roughness': 0.4983, 'metallic': 0.8972, 'transmission': 0.0, 'ior': 0.2496}
+
+# iron_material_params_range = {
+#     'material': 'metal',
+#     'E': (2e7, 2.1e7),
+#     'nu': (0.29, 0.34),
+#     'yield_stress': (2.5e8, 2.6e8),                         # 黄金美妙的延展性（
+#     'xi': 0.01,
+#     'hardening': 1.0,
+#     'particle_dense': 2000000.0,
+#     'rpic_damping': 0.2,
+#     'density': 7870.0,
+#     'g': [0.0, -4, 0.0],                                # 默认只受重力，这里没给9.8是为了数值的稳定性
+#     'albedo': [(0.45, 0.50), (0.45, 0.5), (0.45, 0.5)],
+#     'emission': [0.0, 0.0, 0.0],
+#     'roughness': (0.25, 0.65),
+#     'metallic': (0.85, 1.0),
+#     'transmission': 0.0,
+#     'ior': (0.15, 0.35)                                 # bushiyong
+# }
 
 copper_material_params_range = {
     'material': 'metal',
