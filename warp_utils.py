@@ -68,6 +68,7 @@ class MPMStateStruct:
     # grid
     grid_m: wp.array(dtype=float, ndim=3)
     grid_m_instances: wp.array(dtype=float, ndim=4)
+    # grid_m_instances_render: wp.array(dtype=float, ndim=4)
     grid_v_in: wp.array(dtype=wp.vec3, ndim=3)  # grid node momentum/velocity
     grid_v_out: wp.array(
         dtype=wp.vec3, ndim=3

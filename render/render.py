@@ -77,6 +77,8 @@ def sample_cdf(
             hi = mid
         else:
             lo = mid + 1
+    # if lo >= cdf.shape[0]:
+    #     print(99999)
     return lo
 
 @wp.func
@@ -193,9 +195,6 @@ def ray_surface_interaction(
     F0  = (eta - 1.0) / (eta + 1.0); F0 *= 2.0*F0
 
     F = fresnel_schlick(NoI, F0, roughness)
-    # if x == 535 and y == 600:
-    #     sky_color, uv = calculate_sky_color(hdr_image, hemispheric_sample)
-    #     print(brightness(sky_color))
 
     if wp.randf(wp.uint32(tid + 520)) < F + metallic or k < 0.0:
         ray.direction = I - 2.0 * NoI * N
@@ -239,7 +238,6 @@ def render_frame(
             if rand_value < roulette_prob:
                 ray.color /= roulette_prob
                 break
-
         t_min = float(1000.0)
         hit_n = wp.vec3(0.0, 0.0, 0.0)
         hit_mesh_idx = int(-1)
@@ -262,23 +260,14 @@ def render_frame(
         #     print(hit_mesh_idx)
         if hit_mesh_idx == -1:
             sky_color, uv = calculate_sky_color(hdr_image, ray.direction)
-            # if x == 985 and y == 395:
-            #     print(ray.direction)
-            #     print(uv)
-            #     print(sky_color)
-            #     _y = int(uv[1] * float(hdr_image.height))
-            #     _x = int(uv[0] * float(hdr_image.width))
-            #     print(_x)
-            #     print(_y)
-            #     print(hdr_image.img[_y * hdr_image.width + _x])
-            #     _x = 2393
-            #     _y = 826
-            #     print(hdr_image.img[_y * hdr_image.width + _x])
             ray.color = vec3_mul(ray.color, sky_color)
             break
         # or hit a mesh, ray surface interaction
         hit_point = ray.origin + ray.direction * t_min
+        # if hit_mesh_idx >= scene.material_ids.shape[0]:
+        #     print(114514)
         material_id = scene.material_ids[hit_mesh_idx]
+
         ray = ray_surface_interaction(
             hdr_image=hdr_image,
             materials=materials,
@@ -302,10 +291,7 @@ def render_frame(
         visible = brightness(ray.color)
         if intensity + 1e-5 < visible or visible < VISIBILITY:
             break
-    # get the ray, put into buffer
-    # wp.atomic_add(
-    #     frame_buffer[xy], wp.vec4(ray.color[0], ray.color[1], ray.color[2], 1.0)
-    # )
+
     wp.atomic_add(
         frame_buffer, xy, wp.vec4(ray.color[0], ray.color[1], ray.color[2], 1.0)
     )

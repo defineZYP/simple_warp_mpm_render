@@ -8,7 +8,7 @@ import torch
 from skimage import img_as_ubyte
 from scene_init.materials import materials_mapping
 from scene_init.scene_render_info import Scene
-from warp_utils import torch2warp_int32, torch2warp_uint64
+from warp_utils import torch2warp_int32, torch2warp_uint64, MPMStateStruct
 
 
 def save_data_at_frame(
@@ -90,8 +90,11 @@ def add_frame(mpm_solver, video_writer, instances=None, scene_materials=None, de
             ):
                 mpm_solver.MCs[i_idx].surface(
                     grid_m[i_idx], 
-                    0.2
+                    0.1
                 )
+                # print(type(grid_m[i_idx]))
+                arr = grid_m[i_idx].numpy()
+                # print(i_idx, arr[arr != 0].mean(), arr[arr != 0].max(), arr[arr != 0].min())
                 # print(mpm_solver.MCs[i_idx].indices.numpy().shape)
                 mesh = wp.Mesh(
                     points=mpm_solver.MCs[i_idx].verts,

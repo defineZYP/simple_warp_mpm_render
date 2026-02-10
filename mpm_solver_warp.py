@@ -40,9 +40,9 @@ class MPM_Simulator_WARP:
         # R = 1.875
         R = 1.325
 
-        # theta = random.uniform(0, 2) * math.pi
+        theta = random.uniform(0, 2) * math.pi
         # theta = 1 * math.pi
-        theta = 0.1 * math.pi
+        # theta = 0.1 * math.pi
 
         camera_x = 0.5 + R * math.cos(theta)
         camera_z = 0.5 + R * math.sin(theta)
@@ -907,12 +907,12 @@ class MPM_Simulator_WARP:
             )  # x, v, C, F_trial are updated
 
         #### CFL check ####
-        # particle_v = self.mpm_state.particle_v.numpy()
-        # if np.max(np.abs(particle_v)) > self.mpm_model.dx / dt:
-        #     print("max particle v: ", np.max(np.abs(particle_v)))
-        #     print("max allowed  v: ", self.mpm_model.dx / dt)
-        #     print("does not allow v*dt>dx")
-        #     input()
+        particle_v = self.mpm_state.particle_v.numpy()
+        if np.max(np.abs(particle_v)) > self.mpm_model.dx / dt:
+            print("max particle v: ", np.max(np.abs(particle_v)))
+            print("max allowed  v: ", self.mpm_model.dx / dt)
+            print("does not allow v*dt>dx")
+            input()
         #### CFL check ####
 
         # check valid

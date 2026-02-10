@@ -72,8 +72,10 @@ def hdr_texture(
 ):
     y = int(uv[1] * float(hdr.height))
     x = int(uv[0] * float(hdr.width))
-    # y = wp.clamp(y, 0, hdr.height - 1)
-    # x = wp.clamp(x, 0, hdr.width - 1)
+    y = wp.clamp(y, 0, hdr.height - 1)
+    x = wp.clamp(x, 0, hdr.width - 1)
+    # if y * hdr.width + x == hdr.img.shape[0]:
+    #     print(1010101010)
     return hdr.img[y * hdr.width + x]
 
 def load_hdr_image(hdr_path, device='cuda:0'):

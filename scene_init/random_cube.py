@@ -93,6 +93,8 @@ def init_cube(
         if isinstance(material, str):
             material_range = materials_range[materials_mapping[material]]
             material = get_random_material_from_range(material_range)
+        
+        material['particle_dense'] = material['density'] * 1000
         materials.append(material)
         
         # sample particles to simulate the ball
