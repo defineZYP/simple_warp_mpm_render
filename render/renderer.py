@@ -109,7 +109,10 @@ class PathTracingRender:
         device='cuda:0'
     ):
         camera = self.cameras[camera_id]
-        hdr_image = self.hdr_images[camera_id]
+        if camera_id < len(self.hdr_images):
+            hdr_image = self.hdr_images[camera_id]
+        else:
+            hdr_image = self.hdr_images[0]
         frame_buffer = wp.zeros(
             shape=camera.num_pixels,
             dtype=wp.vec4,

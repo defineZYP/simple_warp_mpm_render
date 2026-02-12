@@ -11,6 +11,7 @@ from renderformer_utils import look_at_to_c2w
 
 from render.renderer import PathTracingRender
 from render.camera import Camera, init_camera
+from render.optical_flow_renderer import OpticalFlowRenderer
 # from scene_init.scene_render_info import Scene, SceneMaterial, construct_scene_material_from_materials
 # from scene_init.materials import materials_range
 
@@ -56,7 +57,7 @@ class MPM_Simulator_WARP:
                 position=camera_pos,
                 lookat=center,
                 up=(0.0, 1.0, 0.0),
-                fov=60,
+                fov=40,
                 width=1024,
                 height=1024,
                 exposure=1.0,
@@ -71,6 +72,25 @@ class MPM_Simulator_WARP:
             cameras=cameras,
             hdr_path='./assets/HDRi/10.hdr',
             sample_per_pixel=8
+        )
+
+        self.optical_renderer = OpticalFlowRenderer(
+            cameras=[
+                init_camera(
+                    position=camera_pos,
+                    lookat=center,
+                    up=(0.0, 1.0, 0.0),
+                    fov=40,
+                    width=1024,
+                    height=1024,
+                    exposure=1.0,
+                    aperture=0.0,
+                    focus_distance=0.1,
+                    near=0.1,
+                    gamma=2.2
+                )
+            ],
+            device=device
         )
 
         # renderformer
@@ -223,6 +243,10 @@ class MPM_Simulator_WARP:
         )  # current position
 
         self.mpm_state.particle_v = wp.zeros(
+            shape=n_particles, dtype=wp.vec3, device=device
+        )  # particle velocity
+
+        self.mpm_state.particle_tf = wp.zeros(
             shape=n_particles, dtype=wp.vec3, device=device
         )  # particle velocity
 

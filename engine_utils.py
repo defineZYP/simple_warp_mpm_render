@@ -18,6 +18,8 @@ def save_data_at_frame(
         save_to_ply = True, 
         save_to_h5 = False, 
         save_to_video=True, 
+        save_to_flow=False,
+        dt=1e-5,
         video_writer=None,
         instances=None,
         scene_materials=None,
@@ -55,6 +57,26 @@ def save_data_at_frame(
     if save_to_video:
         add_frame(mpm_solver, video_writer, instances, scene_materials, device)
 
+    if save_to_flow:
+        save_optical_flow(mpm_solver, dt, device)
+
+def save_optical_flow(mpm_solver, dt, device):
+    mpm_solver.optical_renderer.render(
+        camera_id=0,
+        n_particles=mpm_solver.n_particles,
+        mpm_state=mpm_solver.mpm_state,
+        dt=dt,
+        device=device
+    )
+
+def save_flow_to_file(mpm_solver, dir_name):
+    depth = np.stack(mpm_solver.optical_renderer.depths)
+    force = np.stack(mpm_solver.optical_renderer.forces)
+    flow = np.stack(mpm_solver.optical_renderer.flows)
+    np.save(os.path.join(dir_name, "depth.npy"), depth)
+    np.save(os.path.join(dir_name, "force.npy"), force)
+    np.save(os.path.join(dir_name, "flow.npy"), flow)
+
 def add_frame(mpm_solver, video_writer, instances=None, scene_materials=None, device='cuda:0'):
     channels = 3
     grid_m = mpm_solver.mpm_state.grid_m_instances
@@ -63,23 +85,6 @@ def add_frame(mpm_solver, video_writer, instances=None, scene_materials=None, de
     meshes = []
     meshes_ids = torch.zeros((len(instances), ), dtype=torch.uint64, device=device)
     material_ids = torch.zeros((len(instances), ), dtype=torch.int32, device=device)
-    # ground
-    # ground_verts = wp.array([
-    #     wp.vec3([-100.0, 0.1, -100.0]),  # 左下角
-    #     wp.vec3([ 100.0, 0.1, -100.0]),  # 右下角
-    #     wp.vec3([ 100.0, 0.1,  100.0]),  # 右上角
-    #     wp.vec3([ -100.0, 0.1,  100.0])   # 左上角
-    # ], dtype=wp.vec3, device=device)
-    # ground_indices = wp.array([
-    #     0, 1, 2, 0, 2, 3
-    # ], dtype=wp.int32, device=device)
-    # mesh = wp.Mesh(
-    #     points=ground_verts,
-    #     indices=ground_indices,
-    # )
-    # meshes.append(mesh)
-    # meshes_ids[-1] = mesh.id
-    # material_ids[-1] = materials_mapping['ground']
 
     if instances is not None and len(instances) > 0:
         for i_idx, instance in enumerate(instances):

@@ -445,6 +445,7 @@ def g2p(state: MPMStateStruct, model: MPMModelStruct, dt: float):
                     dweight = compute_dweight(model, w, dw, i, j, k)
                     new_F = new_F + wp.outer(grid_v, dweight)
 
+        state.particle_tf[p] = new_v - state.particle_v[p]
         state.particle_v[p] = new_v
         state.particle_x[p] = state.particle_x[p] + dt * new_v
         state.particle_C[p] = new_C

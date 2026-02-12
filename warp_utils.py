@@ -49,6 +49,7 @@ class MPMStateStruct:
     # particle
     particle_x: wp.array(dtype=wp.vec3)   # current position
     particle_v: wp.array(dtype=wp.vec3)   # particle velocity
+    particle_tf: wp.array(dtype=wp.vec3)   # particle total force
     particle_F: wp.array(dtype=wp.mat33)  # particle elastic deformation gradient
     particle_init_cov: wp.array(dtype=float)  # initial covariance matrix
     particle_cov: wp.array(dtype=float)     # current covariance matrix

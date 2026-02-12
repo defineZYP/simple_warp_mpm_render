@@ -26,7 +26,7 @@ def get_random_material_from_range(material_range):
 
 fluid_material_params_range = {
     'material': 'fluid',
-    'bulk_modulus': 2.2e7,              # 越小越像泥浆，越大越像水，真实的水的体积模量约2.2e9，为了数值稳定性，减小为1/1000
+    'bulk_modulus': 2.2e3,              # 越小越像泥浆，越大越像水，真实的水的体积模量约2.2e9，为了数值稳定性，减小为1/1000
     'friction_angle': 0.0,              # 越小越像水，越大越像泥浆
     'g': [0.0, -9.8, 0.0],              # 默认只受重力，这里没给9.8是为了数值的稳定性
     'density': 1000.0,                  # 水的密度固定为1000，基准密度结果
@@ -141,7 +141,7 @@ sand_material_params_range = {                          # looks similar to jelly
 
 gold_material_params_range = {
     'material': 'metal',
-    'E': (7.5e8, 8e8),
+    'E': (7.5e6, 8e6),
     'nu': (0.4, 0.45),
     'yield_stress': (1e8, 3e8),                         # 黄金美妙的延展性（
     'xi': 0.05,
@@ -179,7 +179,7 @@ gold_material_params_range = {
 
 silver_material_params_range = {
     'material': 'metal',
-    'E': (8.1e8, 8.5e8),
+    'E': (8.1e6, 8.5e6),
     'nu': (0.35, 0.4),
     'yield_stress': (5e7, 6e7),                         # 黄金美妙的延展性（
     'xi': 0.01,
@@ -200,7 +200,7 @@ silver_material_params_range = {
 
 iron_material_params_range = {
     'material': 'metal',
-    'E': (2e10, 2.1e10),
+    'E': (2e8, 2.1e8),
     'nu': (0.29, 0.34),
     'yield_stress': (2.5e8, 2.6e8),                         # 黄金美妙的延展性（
     'xi': 0.0,
@@ -219,7 +219,7 @@ iron_material_params_range = {
 
 copper_material_params_range = {
     'material': 'metal',
-    'E': (1e9, 1.1e9),
+    'E': (1e8, 1.1e8),
     'nu': (0.34, 0.38),
     'yield_stress': (7.0e7, 7.1e7),                         # 黄金美妙的延展性（
     'xi': 0.01,
@@ -238,7 +238,7 @@ copper_material_params_range = {
 
 metal_material_params_range = {
     'material': 'metal',
-    'E': (1e8, 2e9),
+    'E': (1e6, 1e9),
     'mu': (0.3, 0.35),
     'yield_stress': (2e4, 1e6),
     'xi': 5e4,
@@ -257,7 +257,7 @@ metal_material_params_range = {
 
 plasticine_material_params_range = {
     'material': 'plasticine',
-    'E': (1e8, 1.1e8),
+    'E': (1e6, 1e7),
     'mu': (0.25, 0.35),
     'yield_stress': (3.9e7, 4.1e7),
     'xi': 0.1,

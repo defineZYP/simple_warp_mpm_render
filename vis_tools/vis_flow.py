@@ -8,7 +8,6 @@ def show_field_map(flow_path, save_path, clip_flow=None):
 
     for i in range(flows.shape[0]):
         flow = flows[i]
-        print(flow.mean())
         h, w = flow.shape[:2]
         u = flow[..., 0]
         v = flow[..., 1]
@@ -39,6 +38,6 @@ def show_field_map(flow_path, save_path, clip_flow=None):
 if __name__ == "__main__":
     # 使用
     show_field_map(
-        '/DATA/DATANAS1/zhangyip/phy/warp-mpm/sim_results/ball/force.npy',
+        '/DATA/DATANAS1/zhangyip/phy/warp-mpm/sim_results/ball/flow.npy',
         './tmp'
     )

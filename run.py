@@ -26,6 +26,7 @@ dvc = "cuda:0"
 
 if __name__ == "__main__":
     scene_name = "ball"
+    dt = 1e-5
     # 整个模拟被限制在了(0.1, 0.9)的范围内，防止超限
     # position_vec, velocity_vec, volume_tensor, instances, particles = init_scene(
     #     [
@@ -47,17 +48,18 @@ if __name__ == "__main__":
     position_vec, velocity_vec, volume_tensor, instances, particles = init_scene(
         [
             {
-                'instance_type': 'cube',
-                'cube_param': [0.01, 0.3, 0.7],
+                'instance_type': 'mesh',
+                'path': '/DATA/DATANAS1/zhangyip/phy/warp-mpm/assets/objs/dragon.obj',
+                'cube_param': [0.7, 0.7, 0.7],
                 'material': 'iron',
-                'center': [0.5, 0.25, 0.5]
-            },
-            {
-                'instance_type': 'cube',
-                'cube_param': [0.5, 0.3, 0.5],
-                'material': 'fluid',
                 'center': [0.5, 0.5, 0.5]
-            }
+            },
+            # {
+            #     'instance_type': 'cube',
+            #     'cube_param': [0.5, 0.3, 0.5],
+            #     'material': 'fluid',
+            #     'center': [0.5, 0.5, 0.5]
+            # }
         ]
     )
     # V = 4/3 * math.pi * r ** 3 / particles
@@ -95,7 +97,7 @@ if __name__ == "__main__":
 
     directory_to_save = f'./sim_results/{scene_name}'
 
-    num_frames = 24 * 20
+    num_frames = 1
     writer = imageio.get_writer(f'./sim_results/{scene_name}.mp4', fps=24)
 
     scene_materials = construct_scene_material_from_materials(
@@ -148,9 +150,11 @@ if __name__ == "__main__":
         mpm_solver, 
         directory_to_save, 
         0, 
-        save_to_ply=True, 
+        save_to_ply=False, 
         save_to_h5=False, 
         save_to_video=False, 
+        save_to_flow=True,
+        dt=dt,
         video_writer=writer,
         instances=instances,
         scene_materials=scene_materials,
@@ -159,18 +163,21 @@ if __name__ == "__main__":
 
     J_lis = []
     for i in range(num_frames):
-        for k in range(1, 1600 * 5):
+        for k in range(1, 1600):
             # print(mpm_solver.mpm_state.particle_F_trial)
-            J = mpm_solver.p2g2p(i, 1e-5 / 5, device=dvc)
+            J = mpm_solver.p2g2p(i, dt, device=dvc)
             J = J.numpy()
             J_lis.append(J[0])
         print(np.any(np.isnan(mpm_solver.mpm_state.particle_x.numpy())))
         save_data_at_frame(
             mpm_solver, 
             directory_to_save, 
-            i, save_to_ply=True, 
+            i, 
+            save_to_ply=False, 
             save_to_h5=False, 
             save_to_video=True, 
+            save_to_flow=True,
+            dt=dt,
             video_writer=writer, 
             instances=instances, 
             scene_materials=scene_materials, 
@@ -179,6 +186,8 @@ if __name__ == "__main__":
 
     frames = np.arange(len(J_lis))
     values = np.array(J_lis)
+
+    save_flow_to_file(mpm_solver, directory_to_save)
     # plt.figure(figsize=(10, 6))
     # plt.plot(frames, values, linewidth=2)
     # plt.savefig('./tmp/J_curve.png')
