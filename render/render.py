@@ -221,11 +221,11 @@ def render_frame(
     frame_buffer: wp.array(dtype=wp.vec4)
 ):
     tid = wp.tid()
-    height = int(camera.height + 0.5)
+    width = int(camera.width + 0.5)
     num_pixels = camera.num_pixels
     xy = tid % num_pixels
-    x = float(xy % height)
-    y = float(xy // height)
+    x = float(xy % width)
+    y = float(xy // width)
 
     # init ray
     ray = generate_ray(camera, x, y, tid)

@@ -30,105 +30,22 @@ def get_J(state: MPMStateStruct, c_res: wp.array(dtype=float)):
     # print(type(c_res))
 
 class MPM_Simulator_WARP:
-    def __init__(self, n_particles, n_grid=100, grid_lim=1.0, num_instances=1, device="cuda:0"):
+    def __init__(
+        self, 
+        n_particles, 
+        n_grid=100, 
+        grid_lim=1.0, 
+        num_instances=1, 
+        rgb_renderer=None,
+        optical_renderer=None,
+        device="cuda:0"
+    ):
         self.init_times = 0
         self.num_instances = num_instances
-        # calculate camera info
-        # camera_front = np.array([1, -1, 1], dtype=float)
-        # camera_front /= np.linalg.norm(camera_front)
-        center = (0.5, 0.5125, 0.5)
-
-        # R = 1.875
-        R = 1.325
-
-        theta = random.uniform(0, 2) * math.pi
-        # theta = 1 * math.pi
-        # theta = 0.1 * math.pi
-
-        camera_x = 0.5 + R * math.cos(theta)
-        camera_z = 0.5 + R * math.sin(theta)
-        camera_pos = (camera_x, 0.875, camera_z)
-        camera_front = [center[i] - camera_pos[i] for i in range(3)]
-        camera_front /= np.linalg.norm(camera_front)
-        camera_front = tuple(camera_front)
-
-        cameras = [
-            init_camera(
-                position=camera_pos,
-                lookat=center,
-                up=(0.0, 1.0, 0.0),
-                fov=40,
-                width=1024,
-                height=1024,
-                exposure=1.0,
-                aperture=0.0,
-                focus_distance=0.1,
-                near=0.1,
-                gamma=2.2
-            )
-        ]
         
-        self.renderer = PathTracingRender(
-            cameras=cameras,
-            hdr_path='./assets/HDRi/10.hdr',
-            sample_per_pixel=8
-        )
+        self.renderer = rgb_renderer
 
-        self.optical_renderer = OpticalFlowRenderer(
-            cameras=[
-                init_camera(
-                    position=camera_pos,
-                    lookat=center,
-                    up=(0.0, 1.0, 0.0),
-                    fov=40,
-                    width=1024,
-                    height=1024,
-                    exposure=1.0,
-                    aperture=0.0,
-                    focus_distance=0.1,
-                    near=0.1,
-                    gamma=2.2
-                )
-            ],
-            device=device
-        )
-
-        # renderformer
-        # self.renderer = RenderFormerRenderingPipeline.from_pretrained(
-        #     "/DATA/DATANAS1/zhangyip/phy/renderformer/models/rf_large"
-        # )
-        # self.renderer.to(device)
-
-        
-        # c2w = np.stack(
-        #     [
-        #         look_at_to_c2w(
-        #             camera_pos,
-        #             center,
-        #             (0.0, 1.0, 0.0)
-        #         )
-        #     ]
-        # )
-        # fov = np.array([45.])
-
-        # self.c2w = torch.tensor(c2w, device=device, dtype=torch.float32).unsqueeze(0)
-        # self.fov = torch.tensor(fov, device=device, dtype=torch.float32).unsqueeze(0)
-    
-        # self.renderer = wp.render.OpenGLRenderer(
-        #     vsync=False, 
-        #     headless=True,
-        #     draw_sky=True,
-        #     draw_axis=False,
-        #     draw_grid=False,
-        #     camera_fov=30,
-        #     camera_pos=camera_pos,
-        #     camera_front=camera_front,
-        #     camera_up=(0.0, 1.0, 0.0),
-        #     background_color=(0.53, 0.8, 0.92),
-        #     screen_width=1024,
-        #     screen_height=1024,
-        # )
-        # self.renderer.render_ground()
+        self.optical_renderer = optical_renderer
 
         self.initialize(n_particles, n_grid, grid_lim, num_instances=num_instances, device=device)
         self.time_profile = {}

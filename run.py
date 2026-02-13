@@ -5,7 +5,6 @@ from engine_utils import *
 import torch
 wp.init()
 wp.config.verify_cuda = True
-# wp.config.mode = "debug"
 
 import tqdm
 
@@ -18,13 +17,17 @@ from scene_init.scene_render_info import construct_scene_material_from_materials
 from constraints.add_collider import add_surface_collider, add_bounding_box
 from constraints.add_velocity_translation import add_velocity_on_particles, add_rotation_on_particles
 
+from render.util import random_renderer
+
 import math
+import time
 
 import matplotlib.pyplot as plt
 
 dvc = "cuda:0"
 
 if __name__ == "__main__":
+    start = time.time()
     scene_name = "ball"
     dt = 1e-5
     # 整个模拟被限制在了(0.1, 0.9)的范围内，防止超限
@@ -63,10 +66,13 @@ if __name__ == "__main__":
         ]
     )
     # V = 4/3 * math.pi * r ** 3 / particles
+    rgb_renderer, optical_renderer = random_renderer()
     mpm_solver = MPM_Simulator_WARP(
         particles, 
         n_grid=256, 
-        num_instances=len(instances)
+        num_instances=len(instances),
+        rgb_renderer=rgb_renderer,
+        optical_renderer=optical_renderer
     )
     # volume_tensor = torch.ones(mpm_solver.n_particles) * V
     mpm_solver.load_initial_data_from_torch(
@@ -97,8 +103,11 @@ if __name__ == "__main__":
 
     directory_to_save = f'./sim_results/{scene_name}'
 
-    num_frames = 1
-    writer = imageio.get_writer(f'./sim_results/{scene_name}.mp4', fps=24)
+    num_frames = 24 * 5
+
+    head_writer = imageio.get_writer(f'./sim_results/{scene_name}.mp4', fps=24)
+    left_writer = imageio.get_writer(f'./sim_results/{scene_name}_left.mp4', fps=24)
+    right_writer = imageio.get_writer(f'./sim_results/{scene_name}_right.mp4', fps=24)
 
     scene_materials = construct_scene_material_from_materials(
         materials_range,
@@ -155,7 +164,7 @@ if __name__ == "__main__":
         save_to_video=False, 
         save_to_flow=True,
         dt=dt,
-        video_writer=writer,
+        video_writer=[head_writer, left_writer, right_writer],
         instances=instances,
         scene_materials=scene_materials,
         device=dvc
@@ -178,7 +187,7 @@ if __name__ == "__main__":
             save_to_video=True, 
             save_to_flow=True,
             dt=dt,
-            video_writer=writer, 
+            video_writer=[head_writer, left_writer, right_writer], 
             instances=instances, 
             scene_materials=scene_materials, 
             device=dvc 
@@ -194,3 +203,5 @@ if __name__ == "__main__":
 
     # mpm_solver.renderer.clear()
     del mpm_solver
+    end = time.time()
+    print(f"use time {end - start}s")

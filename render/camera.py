@@ -81,6 +81,72 @@ def init_camera(
 
     return camera
 
+def init_head_camera(
+    position=(0,0,0),
+    lookat=(1,0,0),
+    up=(0,1,0),
+    fov=35,
+    width=512,
+    height=512,
+    exposure=1.0,
+    aperture=0.0,
+    focus_distance=1.0,
+    near=1.0,
+    gamma=2.2,
+    IPD=0.064
+):
+    head_cam = init_camera(
+        position,
+        lookat,
+        up,
+        fov,
+        width,
+        height,
+        exposure,
+        aperture,
+        focus_distance,
+        near,
+        gamma
+    )
+    # normalize之后的结果
+    head_position = np.array(head_cam.position)
+    head_lookat = np.array(head_cam.lookat)
+    head_up = np.array(head_cam.up)
+    head_right = np.array(head_cam.right)
+
+    d = IPD / 2
+    left_position = head_position - d * head_right
+    left_cam = init_camera(
+        left_position,
+        head_lookat,
+        head_up,
+        fov,
+        width,
+        height,
+        exposure,
+        aperture,
+        focus_distance,
+        near,
+        gamma
+    )
+
+    right_position = head_position + d * head_right
+    right_cam = init_camera(
+        right_position,
+        head_lookat,
+        head_up,
+        fov,
+        width,
+        height,
+        exposure,
+        aperture,
+        focus_distance,
+        near,
+        gamma
+    )
+
+    return [head_cam, left_cam, right_cam]
+
 @wp.func
 def _sample_disk(tid: int):
     r = wp.sqrt(wp.randf(wp.uint32(tid + 1)))

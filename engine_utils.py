@@ -77,7 +77,7 @@ def save_flow_to_file(mpm_solver, dir_name):
     np.save(os.path.join(dir_name, "force.npy"), force)
     np.save(os.path.join(dir_name, "flow.npy"), flow)
 
-def add_frame(mpm_solver, video_writer, instances=None, scene_materials=None, device='cuda:0'):
+def add_frame(mpm_solver, video_writers, instances=None, scene_materials=None, device='cuda:0'):
     channels = 3
     grid_m = mpm_solver.mpm_state.grid_m_instances
     # print(position)
@@ -121,16 +121,22 @@ def add_frame(mpm_solver, video_writer, instances=None, scene_materials=None, de
     # scene.num_meshes = len(instances) + 1
     scene.num_meshes = len(instances)
     
-    pixels_np = mpm_solver.renderer.render(
-        camera_id=0,
-        scene=scene,
-        scene_materials=scene_materials
-    )
+    for i in range(len(mpm_solver.renderer.cameras)):
+        video_writer = video_writers[i]
+        pixels_np = mpm_solver.renderer.render(
+            camera_id=i,
+            scene=scene,
+            scene_materials=scene_materials
+        )
 
-    pixels_np = np.clip(pixels_np, 0.0, 1.0).reshape(1024, 1024, 3)
+        pixels_np = np.clip(pixels_np, 0.0, 1.0).reshape(
+            int(mpm_solver.renderer.cameras[i].height), 
+            int(mpm_solver.renderer.cameras[i].width), 
+            3
+        )
 
-    # pixels_np = pixels_np.numpy()
-    video_writer.append_data(img_as_ubyte(pixels_np))
+        # pixels_np = pixels_np.numpy()
+        video_writer.append_data(img_as_ubyte(pixels_np))
 
 def particle_position_to_ply(mpm_solver, filename):
     # position is (n,3)
