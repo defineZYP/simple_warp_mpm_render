@@ -70,12 +70,12 @@ def save_optical_flow(mpm_solver, dt, device):
     )
 
 def save_flow_to_file(mpm_solver, dir_name):
-    depth = np.stack(mpm_solver.optical_renderer.depths)
-    force = np.stack(mpm_solver.optical_renderer.forces)
-    flow = np.stack(mpm_solver.optical_renderer.flows)
-    np.save(os.path.join(dir_name, "depth.npy"), depth)
-    np.save(os.path.join(dir_name, "force.npy"), force)
-    np.save(os.path.join(dir_name, "flow.npy"), flow)
+    depth = np.stack(mpm_solver.optical_renderer.depths).astype(np.float32)
+    force = np.stack(mpm_solver.optical_renderer.forces).astype(np.float32)
+    flow = np.stack(mpm_solver.optical_renderer.flows).astype(np.float32)
+    np.savez_compressed(os.path.join(dir_name, "depth.npz"), depth)
+    np.savez_compressed(os.path.join(dir_name, "force.npz"), force)
+    np.savez_compressed(os.path.join(dir_name, "flow.npz"), flow)
 
 def add_frame(mpm_solver, video_writers, instances=None, scene_materials=None, device='cuda:0'):
     channels = 3

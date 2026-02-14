@@ -66,6 +66,7 @@ def sample_mesh(
         dtype=int,
         device=device
     )
+    # print(obj_file)
     mesh = trimesh.load(obj_file)
     mesh.process()
     bbox_min, bbox_max = mesh.bounds
@@ -172,7 +173,7 @@ def init_mesh(
         centers.append(center)
 
         if velocity == -1:
-            velocity = [random.uniform(-0.1, 0.1), random.uniform(0.05, 0.1), random.uniform(-0.05, 0.05)]
+            velocity = [random.uniform(-0.2, 0.2), random.uniform(-0.2, 0.2), random.uniform(-0.2, 0.2)]
         velocities.append(velocity)
 
         if material == -1:
@@ -204,7 +205,9 @@ def init_mesh(
     velocity_vec = torch.zeros((total_particles, 3), dtype=torch.float32)
     volumn_vec = torch.zeros((total_particles), dtype=torch.float32)
     start_particle_idx = 0
+    end_particle_idx = 0
     # 第二轮
+    # print(mesh_pathes)
     for i_idx in range(len(mesh_pathes)):
         _position_vec = sample_mesh(
             mesh_pathes[i_idx],
@@ -225,12 +228,14 @@ def init_mesh(
             'start_idx': start_particle_idx + index_bias,
             'end_idx': end_particle_idx + index_bias,
             'material': materials[i_idx],
+            'velocity': velocities[i_idx],
+            'center': centers[i_idx],
+            'cube_param': cube_params[i_idx]
         })
         start_particle_idx = end_particle_idx
 
     return position_vec[:end_particle_idx], velocity_vec[:end_particle_idx], volumn_vec[:end_particle_idx], instances, centers, cube_params, end_particle_idx
 
-    
 if __name__ == "__main__":
     wp.init()
 

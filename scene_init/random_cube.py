@@ -82,7 +82,7 @@ def init_cube(
         centers.append(center)
 
         if velocity == -1:
-            velocity = [random.uniform(-0.1, 0.1), random.uniform(0.05, 0.1), random.uniform(-0.05, 0.05)]
+            velocity = [random.uniform(-0.2, 0.2), random.uniform(-0.2, 0.2), random.uniform(-0.2, 0.2)]
         velocities.append(velocity)
 
         if material == -1:
@@ -132,7 +132,10 @@ def init_cube(
         instances.append({
             'start_idx': start_particle_idx + index_bias,
             'end_idx': end_particle_idx + index_bias,
-            'material': materials[i_idx]
+            'material': materials[i_idx],
+            'velocity': velocities[i_idx],
+            'center': centers[i_idx],
+            'cube_param': cube_params[i_idx]
         })
         start_particle_idx = end_particle_idx
 

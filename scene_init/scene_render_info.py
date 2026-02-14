@@ -72,7 +72,7 @@ def construct_scene_material_from_materials(materials, materials_mapping, instan
         #     materials[materials_mapping[instance['material']['material']]]
         # )
         material = instance['material']
-        print(material)
+        # print(material)
         if 'albedo' in material:
             albedo[idx, :] = torch.tensor(material['albedo'], dtype=torch.float32, device=device)
         if 'emission' in material:

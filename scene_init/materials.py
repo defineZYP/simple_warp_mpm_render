@@ -300,7 +300,7 @@ materials_range = [
     copper_material_params_range,
     metal_material_params_range,
     plasticine_material_params_range,
-    ground_material_params_range
+    # ground_material_params_range
 ]
 
 materials_mapping = {
@@ -317,6 +317,9 @@ materials_mapping = {
     'copper': 10,
     'metal': 11,
     'plasticine': 12,
-    'ground': 13
+    # 'ground': 13
 }
 
+materials_trans_mapping = {}
+for k in materials_mapping:
+    materials_trans_mapping[materials_mapping[k]] = k

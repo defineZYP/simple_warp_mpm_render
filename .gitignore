@@ -9,3 +9,4 @@ tmp/
 *.h5
 *.usd
 log.txt
+test.py
