@@ -94,7 +94,13 @@ def init_cube(
             material_range = materials_range[materials_mapping[material]]
             material = get_random_material_from_range(material_range)
         
-        material['particle_dense'] = material['density'] * 1000
+        if material['material'] == "foam":
+            # to avoid too less particles
+            material['particle_dense'] = material['density'] * 100000
+        else:
+            # because time limit, set a maximum of particle dense
+            # but actually, if time is enough, it is recommended to set particle dense according to the original density
+            material['particle_dense'] = min(1000000.0, material['density'] * 1000)
         materials.append(material)
         
         # sample particles to simulate the ball
@@ -108,6 +114,8 @@ def init_cube(
         cube_deltas.append([nx, ny, nz, dx, dy, dz])
         num_particle = nx * ny * nz
         num_particles.append(num_particle)
+
+        # print(instance_params[i_idx], num_particle)
 
     total_particles = int(np.sum(num_particles))
     position_vec = torch.zeros((total_particles, 3), dtype=torch.float32)

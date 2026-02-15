@@ -11,7 +11,8 @@ def overlap3d(a, b):
     )
 
 def sample_boxes_3d(n,
-                    size_range=(0.15, 0.5),
+                    size_range=(0.15, 0.4),
+                    bounding_box=(0.1, 0.9),
                     max_trials=20000):
     
     boxes = []
@@ -22,13 +23,13 @@ def sample_boxes_3d(n,
             h = random.uniform(*size_range)
             d = random.uniform(*size_range)
             
-            cx = random.uniform(w/2, 1-w/2)
-            cy = random.uniform(h/2, 1-h/2)
-            cz = random.uniform(d/2, 1-d/2)
+            cx = random.uniform(w/2 + bounding_box[0], bounding_box[1] - w/2)
+            cy = random.uniform(h/2 + bounding_box[0], bounding_box[1] - h/2)
+            cz = random.uniform(d/2 + bounding_box[0], bounding_box[1] - d/2)
             
             rect = (
-                cx-w/2, cy-h/2, cz-d/2,
-                cx+w/2, cy+h/2, cz+d/2
+                cx - w/2, cy - h/2, cz - d/2,
+                cx + w/2, cy + h/2, cz + d/2
             )
             
             if all(not overlap3d(rect, b) for b in boxes):

@@ -40,12 +40,16 @@ def init_scene(
         ball_instances
     )
 
+    # print(ball_particles)
+
     # init cubes
     cube_position_vec, cube_velocity_vec, cube_volumn_vec, cube_instances, _, _, cube_particles = init_cube(
         len(cube_instances),
         cube_instances,
         index_bias=ball_particles
     )
+
+    # print(cube_particles)
     
     # init mesh
     mesh_position_vec, mesh_velocity_vec, mesh_volumn_vec, mesh_instances, _, _, mesh_particles = init_mesh(
@@ -54,6 +58,8 @@ def init_scene(
         index_bias=ball_particles + cube_particles,
         device=device
     )
+
+    # print(mesh_particles)
 
     # merge
     total_particles = ball_particles + cube_particles + mesh_particles

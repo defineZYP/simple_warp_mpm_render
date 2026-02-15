@@ -10,3 +10,4 @@ tmp/
 *.usd
 log.txt
 test.py
+.vscode/

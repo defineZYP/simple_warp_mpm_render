@@ -110,7 +110,6 @@ def sample_mesh(
         device=device
     )
 
-    
     valid = m.valid.numpy()
     particles = m.particles.numpy()
     particles = particles[valid == 1]
@@ -184,8 +183,12 @@ def init_mesh(
         if isinstance(material, str):
             material_range = materials_range[materials_mapping[material]]
             material = get_random_material_from_range(material_range)
-        
-        material['particle_dense'] = material['density'] * 1000
+ 
+        if material['material'] == "foam":
+            # to avoid too less particles
+            material['particle_dense'] = material['density'] * 100000
+        else:
+            material['particle_dense'] = min(1000000.0, material['density'] * 1000)
         materials.append(material)
         
         # sample particles to simulate the ball
@@ -218,21 +221,23 @@ def init_mesh(
             device=device
         )
         true_num_particles = _position_vec.shape[0]
-        end_particle_idx = start_particle_idx + true_num_particles
-        position_vec[start_particle_idx: end_particle_idx] = torch.tensor(_position_vec)
-        velocity_vec[start_particle_idx: end_particle_idx, :] = torch.tensor([velocities[i_idx]]).repeat(true_num_particles, 1)
-        if delta_noise_velocity:
-            velocity_vec[start_particle_idx: end_particle_idx, :] += torch.rand((true_num_particles, 3)) * 1e-2
-        volumn_vec[start_particle_idx: end_particle_idx] = torch.ones(true_num_particles, dtype=torch.float32) / materials[i_idx]['particle_dense']
-        instances.append({
-            'start_idx': start_particle_idx + index_bias,
-            'end_idx': end_particle_idx + index_bias,
-            'material': materials[i_idx],
-            'velocity': velocities[i_idx],
-            'center': centers[i_idx],
-            'cube_param': cube_params[i_idx]
-        })
-        start_particle_idx = end_particle_idx
+        if true_num_particles > 0:
+        # print(mesh_pathes[i_idx], centers[i_idx], cube_params[i_idx], cube_deltas[i_idx], num_particles[i_idx], true_num_particles)
+            end_particle_idx = start_particle_idx + true_num_particles
+            position_vec[start_particle_idx: end_particle_idx] = torch.tensor(_position_vec)
+            velocity_vec[start_particle_idx: end_particle_idx, :] = torch.tensor([velocities[i_idx]]).repeat(true_num_particles, 1)
+            if delta_noise_velocity:
+                velocity_vec[start_particle_idx: end_particle_idx, :] += torch.rand((true_num_particles, 3)) * 1e-2
+            volumn_vec[start_particle_idx: end_particle_idx] = torch.ones(true_num_particles, dtype=torch.float32) / materials[i_idx]['particle_dense']
+            instances.append({
+                'start_idx': start_particle_idx + index_bias,
+                'end_idx': end_particle_idx + index_bias,
+                'material': materials[i_idx],
+                'velocity': velocities[i_idx],
+                'center': centers[i_idx],
+                'cube_param': cube_params[i_idx]
+            })
+            start_particle_idx = end_particle_idx
 
     return position_vec[:end_particle_idx], velocity_vec[:end_particle_idx], volumn_vec[:end_particle_idx], instances, centers, cube_params, end_particle_idx
 

@@ -33,7 +33,7 @@ if __name__ == "__main__":
     args = parse_args()
     mode = args.mode
     bias = mode * 200
-    for idx in tqdm.tqdm(range(200), desc='movies', position=0, leave=False):
+    for idx in tqdm.tqdm(range(1), desc='movies', position=0, leave=False):
         # 随机采样1-3个物体，不给予初速度
         items = random.randint(1, 3)
         results = sample_boxes_3d(
@@ -104,6 +104,6 @@ if __name__ == "__main__":
         print(scene_info)
         normal_simulation_once(
             scene_info,
-            save_root='/DATA/DATANAS2/zhangyip/sim_results',
+            save_root='./sim_results',
             idx=idx + bias,
         )

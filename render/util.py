@@ -21,7 +21,7 @@ def random_renderer(
     gamma=2.2,
     device='cuda:0'
 ):
-    center = (0.5, 0.5125, 0.5)
+    center = (0.5, 0.3875, 0.5)
 
     # R = 1.875
     R = 1.325
@@ -30,7 +30,7 @@ def random_renderer(
 
     camera_x = 0.5 + R * math.cos(theta)
     camera_z = 0.5 + R * math.sin(theta)
-    camera_pos = (camera_x, 0.875, camera_z)
+    camera_pos = (camera_x, 1.25, camera_z)
     camera_front = [center[i] - camera_pos[i] for i in range(3)]
     camera_front /= np.linalg.norm(camera_front)
     camera_front = tuple(camera_front)

@@ -18,7 +18,7 @@ from render.optical_flow_renderer import OpticalFlowRenderer
 import pyglet
 pyglet.options["headless"] = True
 
-from renderformer import RenderFormerRenderingPipeline
+# from renderformer import RenderFormerRenderingPipeline
 
 c_res = wp.zeros(shape=1, dtype=float)
 
@@ -418,6 +418,8 @@ class MPM_Simulator_WARP:
                 material_type = 6
             else:
                 raise TypeError("Undefined material type")
+
+            # print(instances[i_idx])
 
             wp.launch(
                 kernel=set_value_to_int_array,

@@ -5,7 +5,7 @@ import torch
 import numpy as np
 import warp as wp
 
-from mpm_solver_warp import MPM_Simulator_WARP
+# from mpm_solver_warp import MPM_Simulator_WARP
 from mpm_utils import MPMModelStruct, MPMStateStruct
 
 from .cube_selection import selection_particle_cube_region

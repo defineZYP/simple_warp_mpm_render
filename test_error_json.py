@@ -1,4 +1,3 @@
-import os
 import math
 import json
 import time
@@ -71,7 +70,7 @@ def normal_simulation_once(
     add_bounding_box(mpm_solver)
 
     # 保存信息
-    # directory_to_save = f'/{save_root}/{scene_name}'
+    # directory_to_save = f'{save_root}/{scene_name}'
     directory_to_save = os.path.join(save_root, str(scene_name))
     os.makedirs(directory_to_save, exist_ok=True)
 
@@ -151,37 +150,56 @@ if __name__ == "__main__":
     dvc = "cuda:0"
     start = time.time()
     # INIT scene
-    def add_velo(mpm_solver, *args, **kwargs):
-        add_velocity_on_particles(
-            mpm_solver,
-            [0, 0, 0],
-            0.0,
-            999.0,
-            mix_type=0,
-            region_params=[
-                {
-                    'type': 'instance',
-                    'param': {
-                        'target_instance': 0
-                    }
-                }
-            ],
-            device='cuda:0'
-        )
+    # def add_velo(mpm_solver, *args, **kwargs):
+    #     add_velocity_on_particles(
+    #         mpm_solver,
+    #         [0, 0, 0],
+    #         0.0,
+    #         999.0,
+    #         mix_type=0,
+    #         region_params=[
+    #             {
+    #                 'type': 'instance',
+    #                 'param': {
+    #                     'target_instance': 0
+    #                 }
+    #             }
+    #         ],
+    #         device='cuda:0'
+    #     )
 
     normal_simulation_once(
         [
             {
-                'instance_type': 'mesh',
-                'path': '/DATA/DATANAS1/zhangyip/phy/warp-mpm/assets/objs/dragon.obj',
-                'cube_param': [0.7, 0.7, 0.7],
-                'material': 'iron',
-                'center': [0.5, 0.5, 0.5]
-            },
+                'instance_type': 'mesh', 
+                'path': './assets/objs/apple.obj', 
+                'cube_param': [0.2798288062133525, 0.3306641676461868, 0.16116508072076297],
+                'material': 'jelly', 
+                'center': [0.5072338668460352, 0.7066448183748087, 0.7646026041310372]
+            }, 
+            {
+                'instance_type': 'mesh', 
+                'path': './assets/objs/futou.obj', 
+                'cube_param': [0.3490457651948291, 0.36478056918708024, 0.18207323537949027], 
+                'material': 'jelly', 
+                'center': [0.6662652798417561, 0.6909785525469174, 0.5049340002796018]
+            }, 
+            {
+                'instance_type': 'cube', 
+                'cube_param': [0.23277214926671652, 0.36159720690118413, 0.1694803902127917], 
+                'material': 'slime', 
+                'center': [0.7783876542157964, 0.6742621291508717, 0.7853561642881481]
+            }, 
+            {
+                'instance_type': 'cube', 
+                'center': (0.5, 0.2650280842358631, 0.5), 
+                'cube_param': (0.9, 0.3300561684717262, 0.9), 
+                'material': 'fluid'
+            }
         ],
-        save_root='sim_results',
-        idx=0,
-        preprocess=add_velo
+        save_root='./sim_results',
+        idx=1,
+        # preprocess=add_velo
     )
     end = time.time()
     print(f"use time {end - start}s")

@@ -105,7 +105,11 @@ def init_ball(
             material_range = materials_range[materials_mapping[material]]
             material = get_random_material_from_range(material_range)
         
-        material['particle_dense'] = material['density'] * 1000
+        if material['material'] == "foam":
+            # to avoid too less particles
+            material['particle_dense'] = material['density'] * 10000
+        else:
+            material['particle_dense'] = min(1000000.0, material['density'] * 1000)
         materials.append(material)
 
         # sample particles to simulate the ball
@@ -117,7 +121,7 @@ def init_ball(
         num_particles.append(num_particle)
 
     total_particles = int(np.sum(num_particles))
-    total_particles = int(total_particles * 0.52359878) + 1000 * num_instances
+    total_particles = int(total_particles * 0.53) + 2000 * num_instances
     position_vec = torch.zeros((total_particles, 3), dtype=torch.float32)
     velocity_vec = torch.zeros((total_particles, 3), dtype=torch.float32)
     volumn_vec = torch.zeros((total_particles), dtype=torch.float32)
@@ -132,8 +136,11 @@ def init_ball(
             num_particles[i_idx]
         )
         end_particle_idx = start_particle_idx + true_num_particles
+        # print(position_vec.shape)
+        # print(start_particle_idx, end_particle_idx, true_num_particles, _position_vec.shape)
         position_vec[start_particle_idx: end_particle_idx] = torch.tensor(_position_vec)
         velocity_vec[start_particle_idx: end_particle_idx, :] = torch.tensor([velocities[i_idx]]).repeat(true_num_particles, 1)
+        # print(velocities[i_idx])
         if delta_noise_velocity:
             velocity_vec[start_particle_idx: end_particle_idx, :] += torch.rand((true_num_particles, 3)) * 1e-2
         volumn_vec[start_particle_idx: end_particle_idx] = torch.ones(true_num_particles, dtype=torch.float32) / materials[i_idx]['particle_dense']

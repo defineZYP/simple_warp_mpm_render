@@ -83,8 +83,8 @@ def add_frame(mpm_solver, video_writers, instances=None, scene_materials=None, d
     # print(position)
     # TODO mesh and color
     meshes = []
-    meshes_ids = torch.zeros((len(instances), ), dtype=torch.uint64, device=device)
-    material_ids = torch.zeros((len(instances), ), dtype=torch.int32, device=device)
+    meshes_ids = torch.zeros((len(instances) + 1, ), dtype=torch.uint64, device=device)
+    material_ids = torch.zeros((len(instances) + 1, ), dtype=torch.int32, device=device)
 
     if instances is not None and len(instances) > 0:
         for i_idx, instance in enumerate(instances):

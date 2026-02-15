@@ -128,7 +128,6 @@ def von_mises_return_mapping(F_trial: wp.mat33, model: MPMModelStruct, p: int, i
     else:
         return F_trial
 
-
 @wp.func
 def von_mises_return_mapping_with_damage(
     F_trial: wp.mat33, model: MPMModelStruct, p: int, i_idx: int
