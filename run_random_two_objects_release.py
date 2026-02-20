@@ -1,3 +1,4 @@
+import os
 import math
 import time
 import tqdm
@@ -32,13 +33,13 @@ if __name__ == "__main__":
     # energy conservation
     args = parse_args()
     mode = args.mode
-    bias = mode * 100 + 93
-    for idx in tqdm.tqdm(range(7), desc='movies', position=0, leave=False):
+    bias = mode * 100 + 1000
+    for idx in tqdm.tqdm(range(1), desc='movies', position=0, leave=False):
         # 随机采样1-3个物体，不给予初速度
         items = random.randint(1, 3)
         results = sample_boxes_3d(
             items,
-            bounding_box=(0.35, 0.9)
+            bounding_box=(0.35, 0.921875)
         )
         scene_info = []
         for i in range(len(results)):
@@ -81,17 +82,48 @@ if __name__ == "__main__":
                     'center': center
                 }
                 scene_info.append(_info)
+
+        def release_objects(
+            mpm_solver,
+            num_instances,
+            save_r,
+            *args,
+            **kwargs
+        ):
+            release_times = []
+            for i in range(num_instances):
+                release_time = random.uniform(0., 5 * 0.3)
+                release_times.append(release_time)
+                add_velocity_on_particles(
+                    mpm_solver,
+                    [0., 0., 0.],
+                    start_time=0.0,
+                    end_time=release_time,
+                    mix_type=0,
+                    region_params=[
+                        {
+                            'type': 'instance',
+                            'param': {
+                                'target_instance': i
+                            }
+                        }
+                    ],
+                    device='cuda:0'
+                )
+            with open(os.path.join(save_r, 'release.txt'), 'w') as f:
+                for release_time in release_times:
+                    f.write(f"{release_time}\n")
         
         # 地下铺一层水、沙子或者海绵
         ground_type = random.randint(0, 1)
         if ground_type == 1:
-            ground_type = 'foam'
+            ground_type = 'fluid'
         else:
-            ground_type = 'sand'
+            ground_type = 'fluid'
 
         center_y = random.uniform(0.2, 0.25)
         center = (0.5, center_y, 0.5)
-        size = (0.9, (center_y - 0.1) * 2 ,0.9)
+        size = (0.84375, (center_y - 0.078125) * 2, 0.84375)
         scene_info.append(
             {
                 'instance_type': 'cube',
@@ -104,6 +136,11 @@ if __name__ == "__main__":
         print(scene_info)
         normal_simulation_once(
             scene_info,
-            save_root='/DATA/DATANAS2/zhangyip/sim_results',
-            idx=idx + bias,
+            # save_root='/DATA/DATANAS2/zhangyip/sim_results',
+            save_root='./sim_results',
+            # idx=idx + bias,
+            idx=0,
+            save_r=f'/DATA/DATANAS2/zhangyip/sim_results/{0}',
+            num_instances=len(results),
+            preprocess=release_objects
         )

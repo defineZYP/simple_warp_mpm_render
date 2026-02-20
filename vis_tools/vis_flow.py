@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 
 def show_field_map(flow_path, save_path, clip_flow=None):
-    flows = np.load(flow_path)
+    flows = np.load(flow_path)['arr_0']
 
     for i in range(flows.shape[0]):
         flow = flows[i]
@@ -38,6 +38,6 @@ def show_field_map(flow_path, save_path, clip_flow=None):
 if __name__ == "__main__":
     # 使用
     show_field_map(
-        '/DATA/DATANAS1/zhangyip/phy/warp-mpm/sim_results/ball/flow.npy',
+        './sim_results/0/force.npz',
         './tmp'
     )

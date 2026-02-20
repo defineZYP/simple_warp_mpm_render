@@ -52,6 +52,8 @@ def add_velocity_on_particles(
             params=params
         )
 
+    mask = modifier.mask.numpy()
+    # print(mask.sum())
     solver.particle_velocity_modifier_params.append(modifier)
 
     @wp.kernel

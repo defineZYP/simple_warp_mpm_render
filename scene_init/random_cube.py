@@ -122,6 +122,7 @@ def init_cube(
     velocity_vec = torch.zeros((total_particles, 3), dtype=torch.float32)
     volumn_vec = torch.zeros((total_particles), dtype=torch.float32)
     start_particle_idx = 0
+    print(num_particles)
     # 第二轮
     for i_idx in range(num_instances):
         end_particle_idx = start_particle_idx + num_particles[i_idx]

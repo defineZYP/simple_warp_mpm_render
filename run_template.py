@@ -35,7 +35,10 @@ def normal_simulation_once(
     position_vec, velocity_vec, volume_tensor, instances, particles = init_scene(
         scene_info
     )
-    rgb_renderer, optical_renderer = random_renderer()
+    rgb_renderer, optical_renderer = random_renderer(
+        height=480,
+        width=832
+    )
     mpm_solver = MPM_Simulator_WARP(
         particles, 
         n_grid=256, 
@@ -60,12 +63,13 @@ def normal_simulation_once(
     mpm_solver.finalize_mu_lam_bulk()
 
     # 可弹边界
-    add_surface_collider(mpm_solver, (0.0, 0.1, 0.0), (0.0, 1.0, 0.0), 'slip', 1.0)
-    add_surface_collider(mpm_solver, (0.0, 0.9, 0.0), (0.0, -1.0, 0.0), 'slip', 1.0)
-    add_surface_collider(mpm_solver, (0.1, 0.0, 0.0), (1.0, 0.0, 0.0), 'slip', 1.0)
-    add_surface_collider(mpm_solver, (0.9, 0.0, 0.0), (-1.0, 0.0, 0.0), 'slip', 1.0)
-    add_surface_collider(mpm_solver, (0.0, 0.0, 0.9), (0.0, 0.0, -1.0), 'slip', 1.0)
-    add_surface_collider(mpm_solver, (0.0, 0.0, 0.1), (0.0, 0.0, 1.0), 'slip', 1.0)
+    base = 1/256
+    add_surface_collider(mpm_solver, (0.0, 0.078125, 0.0), (0.0, 1.0, 0.0), 'slip', 1.0)
+    add_surface_collider(mpm_solver, (0.0, 0.921875, 0.0), (0.0, -1.0, 0.0), 'slip', 1.0)
+    add_surface_collider(mpm_solver, (0.078125, 0.0, 0.0), (1.0, 0.0, 0.0), 'slip', 1.0)
+    add_surface_collider(mpm_solver, (0.921875, 0.0, 0.0), (-1.0, 0.0, 0.0), 'slip', 1.0)
+    add_surface_collider(mpm_solver, (0.0, 0.0, 0.921875), (0.0, 0.0, -1.0), 'slip', 1.0)
+    add_surface_collider(mpm_solver, (0.0, 0.0, 0.078125), (0.0, 0.0, 1.0), 'slip', 1.0)
 
     # 防超边界
     add_bounding_box(mpm_solver)

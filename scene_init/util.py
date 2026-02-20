@@ -10,6 +10,51 @@ def overlap3d(a, b):
         az2 <= bz1 or bz2 <= az1
     )
 
+def sample_collide_boxes_3d(bounding_box=(0.1, 0.9)):
+    base = 1 / 256
+    target_tower = random.randint(2, 4)
+    # target_tower = 1
+    source_tower = random.randint(2, target_tower)
+
+    source_boxes = []
+    base_height = bounding_box[0]
+
+    for _ in range(source_tower):
+        # w = random.uniform(bounding_box[0], 0.24)
+        w = random.randint(10, 15) * 2 * base
+        # h = random.uniform(bounding_box[0], 0.2)
+        h = random.randint(5, 10) * 2 * base
+        # d = random.uniform(bounding_box[0], 0.5)
+        d = random.uniform(10, 15) * 2 * base
+
+        cx = 60 * base
+        cy = h / 2 + base_height
+        cz = 0.5
+
+        base_height += h + 0.01
+
+        source_boxes.append([cx, cy, cz, w, h, d])
+
+    target_boxes = []
+    base_height = bounding_box[0]
+    for _ in range(target_tower):
+        # w = random.uniform(bounding_box[0], 0.24)
+        w = random.randint(10, 20) * 2 * base
+        # h = random.uniform(bounding_box[0], 0.2)
+        h = random.randint(10, 20) * 2 * base
+        # d = random.uniform(bounding_box[0], 0.5)
+        d = random.uniform(10, 25) * 2 * base
+
+        cx = 150 * base
+        cy = h / 2 + base_height
+        cz = 0.5
+
+        base_height += h + 0.01
+
+        target_boxes.append([cx, cy, cz, w, h, d])
+    
+    return source_boxes, target_boxes
+
 def sample_boxes_3d(n,
                     size_range=(0.15, 0.4),
                     bounding_box=(0.1, 0.9),

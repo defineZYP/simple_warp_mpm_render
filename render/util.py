@@ -25,6 +25,7 @@ def random_renderer(
 
     # R = 1.875
     R = 1.325
+    # R = 1.0
 
     theta = random.uniform(0, 2) * math.pi
 

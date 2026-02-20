@@ -50,11 +50,14 @@ def add_impulse_on_particles(
             region_type=region_type,
             n_particles=solver.n_particles,
             state=solver.mpm_state,
-            modifer=modifier,
+            modifier=modifier,
             mix_type=mix_type,
             device=device,
             params=params
         )
+
+    # mask = modifier.mask.numpy()
+    # print(mask.sum())
     
     solver.impulse_params.append(modifier)
 

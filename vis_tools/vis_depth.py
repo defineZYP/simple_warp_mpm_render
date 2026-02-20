@@ -3,7 +3,8 @@ import os
 import numpy as np
 
 def show_depth_map(np_path, save_path):
-    depth = np.load(np_path)
+    depth = np.load(np_path)['arr_0']
+    # print(depth.files)
     for i in range(depth.shape[0]):
         d = depth[i]
         d[d == 1e10] = 2
@@ -17,6 +18,6 @@ def show_depth_map(np_path, save_path):
 
 if __name__ == "__main__":
     show_depth_map(
-        '/DATA/DATANAS1/zhangyip/phy/warp-mpm/sim_results/ball/depth.npy',
+        './sim_results/0/depth.npz',
         './tmp'
     )
