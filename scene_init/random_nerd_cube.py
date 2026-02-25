@@ -24,7 +24,7 @@ def sample_nerd_cube(
                 x = (i + 0.5) * dx - cube_param[0] / 2 + center[0]
                 y = (j + 0.5) * dy - cube_param[1] / 2 + center[1]
                 z = (k + 0.5) * dz - cube_param[2] / 2 + center[2]
-                if (
+                if not (
                     x > min_x and y > min_y and z > min_z and
                     x < max_x and y < max_y and z < max_z
                 ):
@@ -32,7 +32,7 @@ def sample_nerd_cube(
                     pts[index, 1] = y
                     pts[index, 2] = z
                     index += 1
-    return pts, index
+    return pts[:index, :], index
 
 def init_nerd_cube(
     num_instances=1,
@@ -159,10 +159,10 @@ def init_nerd_cube(
         )
         end_particle_idx = start_particle_idx + true_num_particles
         position_vec[start_particle_idx: end_particle_idx] = torch.tensor(_position_vec)
-        velocity_vec[start_particle_idx: end_particle_idx, :] = torch.tensor([velocities[i_idx]]).repeat(num_particles[i_idx], 1)
+        velocity_vec[start_particle_idx: end_particle_idx, :] = torch.tensor([velocities[i_idx]]).repeat(true_num_particles, 1)
         if delta_noise_velocity:
-            velocity_vec[start_particle_idx: end_particle_idx, :] += torch.rand((num_particles[i_idx], 3)) * 1e-2
-        volumn_vec[start_particle_idx: end_particle_idx] = torch.ones(num_particles[i_idx], dtype=torch.float32) / materials[i_idx]['particle_dense']
+            velocity_vec[start_particle_idx: end_particle_idx, :] += torch.rand((true_num_particles, 3)) * 1e-2
+        volumn_vec[start_particle_idx: end_particle_idx] = torch.ones(true_num_particles, dtype=torch.float32) / materials[i_idx]['particle_dense']
         instances.append({
             'start_idx': start_particle_idx + index_bias,
             'end_idx': end_particle_idx + index_bias,

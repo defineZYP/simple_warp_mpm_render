@@ -19,19 +19,22 @@ def random_renderer(
     focus_distance=0.1,
     near=0.1,
     gamma=2.2,
+    center=(0.5, 0.3875, 0.5),
+    camera_height=1.25,
+    R = 1.325,
     device='cuda:0'
 ):
-    center = (0.5, 0.3875, 0.5)
+    # center = (0.5, 0.3875, 0.5)
 
     # R = 1.875
-    R = 1.325
+    # R = 1.325
     # R = 1.0
 
     theta = random.uniform(0, 2) * math.pi
 
     camera_x = 0.5 + R * math.cos(theta)
     camera_z = 0.5 + R * math.sin(theta)
-    camera_pos = (camera_x, 1.25, camera_z)
+    camera_pos = (camera_x, camera_height, camera_z)
     camera_front = [center[i] - camera_pos[i] for i in range(3)]
     camera_front /= np.linalg.norm(camera_front)
     camera_front = tuple(camera_front)

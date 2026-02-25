@@ -28,6 +28,9 @@ def normal_simulation_once(
     preprocess=None,
     dvc='cuda:0',
     warm_up_steps=0,
+    camera_lookat=(0.5, 0.3875, 0.5),
+    camera_height=1.25,
+    R=1.325,
     *args,
     **kwargs
 ):
@@ -38,7 +41,10 @@ def normal_simulation_once(
     )
     rgb_renderer, optical_renderer = random_renderer(
         height=480,
-        width=832
+        width=832,
+        center=camera_lookat,
+        camera_height=camera_height,
+        R=R
     )
     mpm_solver = MPM_Simulator_WARP(
         particles, 

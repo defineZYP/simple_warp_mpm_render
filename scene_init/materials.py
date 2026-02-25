@@ -24,36 +24,6 @@ def get_random_material_from_range(material_range):
             material[key] = material_range[key]
     return material
 
-fluid_material_params_range = {
-    'material': 'fluid',
-    'bulk_modulus': 2.2e3,              # 越小越像泥浆，越大越像水，真实的水的体积模量约2.2e9，为了数值稳定性，减小为1/1000
-    'friction_angle': 0.0,              # 越小越像水，越大越像泥浆
-    'g': [0.0, -4.9, 0.0],              # 默认只受重力，这里没给9.8是为了数值的稳定性
-    'density': 1000.0,                  # 水的密度固定为1000，基准密度结果
-    # 'particle_dense': 1000000.0,        # 粒子密度
-    'albedo': [175/255, 237/255, 250/255],
-    'emission': [0.0, 0.0, 0.0],
-    'roughness': 0.00,
-    'metallic': 0.0,
-    'transmission': 1.0,
-    'ior': 1.333
-}
-
-red_ink_material_params_range = {
-    'material': 'fluid',
-    'bulk_modulus': 2.2e3,              # 越小越像泥浆，越大越像水，真实的水的体积模量约2.2e9，为了数值稳定性，减小为1/1000
-    'friction_angle': 0.0,              # 越小越像水，越大越像泥浆
-    'g': [0.0, -4.9, 0.0],              # 默认只受重力，这里没给9.8是为了数值的稳定性
-    'density': 1300.0,                  # 水的密度固定为1000，基准密度结果
-    # 'particle_dense': 1000000.0,        # 粒子密度
-    'albedo': [237/255, 37/255, 37/255],
-    'emission': [0.0, 0.0, 0.0],
-    'roughness': 0.00,
-    'metallic': 0.0,
-    'transmission': 1.0,
-    'ior': 1.333
-}
-
 jelly_material_params_range = {
     'material': 'jelly',
     'E': (1e3, 2e3),                                    # 杨氏模量，越大越硬
@@ -358,6 +328,121 @@ ground_material_params_range = {
     'ior': 1.52
 }
 
+fluid_material_params_range = {
+    'material': 'fluid',
+    'bulk_modulus': 2.2e6,              # 越小越像泥浆，越大越像水，真实的水的体积模量约2.2e9，为了数值稳定性，减小为1/1000
+    'friction_angle': 0.0,              # 越小越像水，越大越像泥浆
+    'g': [0.0, -4.9, 0.0],              # 默认只受重力，这里没给9.8是为了数值的稳定性
+    'density': 1000.0,                  # 水的密度固定为1000，基准密度结果
+    # 'particle_dense': 1000000.0,        # 粒子密度
+    'albedo': [175/255, 237/255, 250/255],
+    'emission': [0.0, 0.0, 0.0],
+    'roughness': 0.00,
+    'metallic': 0.0,
+    'transmission': 1.0,
+    'ior': 1.333
+}
+
+red_ink_material_params_range = {
+    'material': 'fluid',
+    'bulk_modulus': 2.2e6,              # 越小越像泥浆，越大越像水，真实的水的体积模量约2.2e9，为了数值稳定性，减小为1/1000
+    'friction_angle': 0.0,              # 越小越像水，越大越像泥浆
+    'g': [0.0, -4.9, 0.0],              # 默认只受重力，这里没给9.8是为了数值的稳定性
+    'density': 1020.0,                  # 水的密度固定为1000，基准密度结果
+    # 'particle_dense': 1000000.0,        # 粒子密度
+    'albedo': [237/255, 37/255, 37/255],
+    'emission': [0.0, 0.0, 0.0],
+    'roughness': 0.02,
+    'metallic': 0.0,
+    'transmission': 0.95,
+    'ior': 1.335
+}
+
+blue_ink_material_params_range = {
+    'material': 'fluid',
+    'bulk_modulus': 2.2e6,              # 越小越像泥浆，越大越像水，真实的水的体积模量约2.2e9，为了数值稳定性，减小为1/1000
+    'friction_angle': 0.0,              # 越小越像水，越大越像泥浆
+    'g': [0.0, -4.9, 0.0],              # 默认只受重力，这里没给9.8是为了数值的稳定性
+    'density': 1020.0,                  # 水的密度固定为1000，基准密度结果
+    # 'particle_dense': 1000000.0,        # 粒子密度
+    'albedo': [0.05, 0.15, 0.75],
+    'emission': [0.0, 0.0, 0.0],
+    'roughness': 0.02,
+    'metallic': 0.0,
+    'transmission': 0.95,
+    'ior': 1.335
+}
+
+seawater_material_params_range = {
+    'material': 'fluid',
+    'bulk_modulus': 2.4e6,
+    'friction_angle': 0.0,
+    'g': [0.0, -4.9, 0.0],
+    'density': 1.025e3,
+    'albedo': [120/255, 200/255, 220/255],
+    'emission': [0., 0., 0.],
+    'roughness': 0.02,
+    'metallic': 0,
+    'transmission': 1.0,
+    'ior': 1.340
+}
+
+ethanol_material_params_range = {
+    'material': 'fluid',
+    'bulk_modulus': 8e5,
+    'friction_angle': 0.0,
+    'g': [0., -4.9, 0.],
+    'density': 7.89e2,
+    'albedo': [1., 1., 1.],
+    'emission': [0., 0., 0.],
+    'roughness': 0.01,
+    'metallic': 0.0,
+    'transmission': 1.0,
+    'ior': 1.361
+}
+
+glycerol_material_params_range = {
+    'material': 'fluid',
+    'bulk_modulus': 4e6,
+    'friction_angle': 0.0,
+    'g': [0., -4.9, 0.],
+    'density': 1.26e3,
+    'albedo': [1., 0.95, 0.85],
+    'emission': [0., 0., 0.],
+    'roughness': 0.05,
+    'metallic': 0.0,
+    'transmission': 0.9,
+    'ior': 1.473
+}
+
+mercury_material_params_range = {
+    'material': 'fluid',
+    'bulk_modulus': 1e7,
+    'friction_angle': 0.,
+    'g': [0., -4.9, 0.],
+    'density': 1.35e4,
+    'albedo': [0.75, 0.75, 0.75],
+    'emission': [0., 0., 0.],
+    'roughness': 0.01,
+    'metallic': 1.0,
+    'transmission': 0.0,
+    'ior': 0.47
+}
+
+oil_material_params_range = {
+    'material': 'fluid',
+    'bulk_modulus': 1.5e6,
+    'friction_angle': 0.0,
+    'g': [0., -4.9, 0.],
+    'density': 8.7e2,
+    'albedo': [0.2, 0.1, 0.05],
+    'emission': [0., 0., 0.],
+    'roughness': 0.15,
+    'metallic': 0.0,
+    'transmission': 0.6,
+    'ior': 1.47
+}
+
 materials_range = [
     fluid_material_params_range,
     jelly_material_params_range,
@@ -375,7 +460,13 @@ materials_range = [
     carrot_material_params_range,
     apple_material_params_range,
     bread_material_params_range,
-    red_ink_material_params_range
+    red_ink_material_params_range,
+    blue_ink_material_params_range,
+    seawater_material_params_range,
+    ethanol_material_params_range,
+    glycerol_material_params_range,
+    mercury_material_params_range,
+    oil_material_params_range,
     # ground_material_params_range
 ]
 
@@ -396,7 +487,13 @@ materials_mapping = {
     'carrot': 13,
     'apple': 14,
     'bread': 15,
-    'red_ink': 16
+    'red_ink': 16,
+    'blue_ink': 17,
+    'seawater': 18,
+    'ethanol': 19,
+    'glycerol': 20,
+    'mercury': 21,
+    'oil': 22,
     # 'ground': 13
 }
 
