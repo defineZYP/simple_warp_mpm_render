@@ -27,6 +27,7 @@ def normal_simulation_once(
     idx, 
     preprocess=None,
     dvc='cuda:0',
+    warm_up_steps=0,
     *args,
     **kwargs
 ):
@@ -101,6 +102,9 @@ def normal_simulation_once(
             *args,
             **kwargs
         )
+
+    for i in range(warm_up_steps):
+        mpm_solver.p2g2p(i, dt, device=dvc)
 
     save_data_at_frame(
         mpm_solver, 

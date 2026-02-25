@@ -247,6 +247,12 @@ class MPM_Simulator_WARP:
         self.particle_velocity_modifiers = []
         self.particle_velocity_modifier_params = []
 
+        self.after_particle_velocity_modifiers = []
+        self.after_particle_velocity_modifier_params = []
+
+        self.model_param_modifiers = []
+        self.model_param_modifier_params = []
+
     # the h5 file should store particle initial position and volume.
     def load_from_sampling(
         self, sampling_h5, n_grid=100, grid_lim=1.0, device="cuda:0"
@@ -848,6 +854,30 @@ class MPM_Simulator_WARP:
                 inputs=[self.mpm_state, self.mpm_model, dt],
                 device=device,
             )  # x, v, C, F_trial are updated
+
+        # post_process
+        for k in range(len(self.after_particle_velocity_modifiers)):
+            wp.launch(
+                kernel = self.after_particle_velocity_modifiers[k],
+                dim = self.n_particles,
+                inputs=[self.time, self.mpm_state, self.after_particle_velocity_modifier_params[k]],
+                device=device,
+            )
+
+        for k in range(len(self.model_param_modifiers)):
+            wp.launch(
+                kernel=self.model_param_modifiers[k],
+                dim=1,
+                inputs=[self.time, self.mpm_model, self.model_param_modifier_params[k]],
+                device=device,
+            )
+
+        wp.launch(
+            kernel=update_particle_position,
+            dim=self.n_particles,
+            inputs=[self.mpm_state, self.mpm_model, dt],
+            device=device,
+        )  # x, v, C, F_trial are updated
 
         #### CFL check ####
         particle_v = self.mpm_state.particle_v.numpy()

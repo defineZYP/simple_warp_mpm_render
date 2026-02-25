@@ -39,6 +39,21 @@ fluid_material_params_range = {
     'ior': 1.333
 }
 
+red_ink_material_params_range = {
+    'material': 'fluid',
+    'bulk_modulus': 2.2e3,              # 越小越像泥浆，越大越像水，真实的水的体积模量约2.2e9，为了数值稳定性，减小为1/1000
+    'friction_angle': 0.0,              # 越小越像水，越大越像泥浆
+    'g': [0.0, -4.9, 0.0],              # 默认只受重力，这里没给9.8是为了数值的稳定性
+    'density': 1300.0,                  # 水的密度固定为1000，基准密度结果
+    # 'particle_dense': 1000000.0,        # 粒子密度
+    'albedo': [237/255, 37/255, 37/255],
+    'emission': [0.0, 0.0, 0.0],
+    'roughness': 0.00,
+    'metallic': 0.0,
+    'transmission': 1.0,
+    'ior': 1.333
+}
+
 jelly_material_params_range = {
     'material': 'jelly',
     'E': (1e3, 2e3),                                    # 杨氏模量，越大越硬
@@ -259,13 +274,13 @@ plasticine_material_params_range = {
     'material': 'plasticine',
     'E': (1e6, 1e7),
     'mu': (0.25, 0.35),
-    'yield_stress': (1e7, 1e8),
-    'xi': 0.1,
+    'yield_stress': (1e5, 1e6),
+    'xi': 0.05,
     'hardening': 0,
-    'softening': 0.1,
+    'softening': 0.05,
     'density': (1200, 2000),
     # 'particle_dense': 2000000.0,
-    'rpic_damping': 0.5,
+    'rpic_damping': 0.03,
     'g': [0.0, -4.9, 0.0],
     'albedo': [(0.3, 0.7), (0.3, 0.7), (0.3, 0.7)],
     'emission': [0.0, 0.0, 0.0],
@@ -273,6 +288,63 @@ plasticine_material_params_range = {
     'metallic': 0.0,
     'transmission': (0.0, 0.05),
     'ior': (1.45, 1.55)
+}
+
+carrot_material_params_range = {
+    'material': 'plasticine',
+    'E': (5e6, 1e7),
+    'mu': (0.34, 0.36),
+    'yield_stress': (4e5, 1e6),
+    'xi': 0.02,
+    'hardening': 1.0,
+    'softening': 0.1,
+    'density': (1050, 1200),
+    'rpic_damping': 0.03,
+    'g': [0.0, -4.9, 0.0],
+    'albedo': [(0.8, 0.9), (0.4, 0.5), (0.1, 0.2)],
+    'emission': [0.0, 0.0, 0.0],
+    'roughness': (0.5, 0.7),
+    'metallic': 0.0,
+    'transmission': 0.0,
+    'ior': (1.33, 1.35)
+}
+
+apple_material_params_range = {
+    'material': 'plasticine',
+    'E': (3e6, 5e6),
+    'mu': (0.3, 0.35),
+    'yield_stress': (2e5, 3e5),
+    'xi': 0.015,
+    'hardening': 1.0,
+    'softening': 0.25,
+    'density': (900, 1100),
+    'rpic_damping': 0.025,
+    'g': [0.0, -4.9, 0.0],
+    'albedo': [(0.8, 0.9), (0.1, 0.2), (0.1, 0.13)],
+    'emission': [0.0, 0.0, 0.0],
+    'roughness': (0.5, 0.6),
+    'metallic': 0.0,
+    'transmission': (0.02, 0.07),
+    'ior': (1.34, 1.36)
+}
+
+bread_material_params_range = {
+    'material': 'foam',
+    'E': (6e4, 1e5),
+    'mu': (0.125, 0.175),
+    'yield_stress': (2e4, 4e4),
+    'xi': 0.05,
+    'hardening': 1.0,
+    'softening': 0.35,
+    'density': (200, 500),
+    'g': [0.0, -4.9, 0.0],
+    'rpic_damping': 0.05,
+    'albedo': [(0.85, 0.95), (0.8, 0.84), (0.6, 0.7)],
+    'emission': [0., 0., 0.],
+    'roughness': (0.7, 0.8),
+    'metallic': 0.0,
+    'transmission': (0.075, 0.125),
+    'ior': 1.1
 }
 
 ground_material_params_range = {
@@ -300,6 +372,10 @@ materials_range = [
     copper_material_params_range,
     metal_material_params_range,
     plasticine_material_params_range,
+    carrot_material_params_range,
+    apple_material_params_range,
+    bread_material_params_range,
+    red_ink_material_params_range
     # ground_material_params_range
 ]
 
@@ -317,6 +393,10 @@ materials_mapping = {
     'copper': 10,
     'metal': 11,
     'plasticine': 12,
+    'carrot': 13,
+    'apple': 14,
+    'bread': 15,
+    'red_ink': 16
     # 'ground': 13
 }
 

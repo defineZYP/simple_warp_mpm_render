@@ -18,9 +18,9 @@ def selection_particle_cube_region(
     else:                               # or
         condition = True
     if (
-        wp.abs(offset[0]) < size[0]
-        and wp.abs(offset[1]) < size[1]
-        and wp.abs(offset[2]) < size[2]
+        wp.abs(offset[0]) < size[0] / 2.
+        and wp.abs(offset[1]) < size[1] / 2.
+        and wp.abs(offset[2]) < size[2] / 2.
         and condition
     ):
         modifier.mask[p] = 1

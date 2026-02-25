@@ -34,7 +34,7 @@ if __name__ == "__main__":
     args = parse_args()
     mode = args.mode
     bias = mode * 100 + 1000
-    for idx in tqdm.tqdm(range(1), desc='movies', position=0, leave=False):
+    for idx in tqdm.tqdm(range(100), desc='movies', position=0, leave=False):
         # 随机采样1-3个物体，不给予初速度
         items = random.randint(1, 3)
         results = sample_boxes_3d(
@@ -115,11 +115,13 @@ if __name__ == "__main__":
                     f.write(f"{release_time}\n")
         
         # 地下铺一层水、沙子或者海绵
-        ground_type = random.randint(0, 1)
+        ground_type = random.randint(0, 2)
         if ground_type == 1:
+            ground_type = 'foam'
+        elif ground_type == 2:
             ground_type = 'fluid'
         else:
-            ground_type = 'fluid'
+            ground_type = 'sand'
 
         center_y = random.uniform(0.2, 0.25)
         center = (0.5, center_y, 0.5)
@@ -136,11 +138,11 @@ if __name__ == "__main__":
         print(scene_info)
         normal_simulation_once(
             scene_info,
-            # save_root='/DATA/DATANAS2/zhangyip/sim_results',
-            save_root='./sim_results',
-            # idx=idx + bias,
-            idx=0,
-            save_r=f'/DATA/DATANAS2/zhangyip/sim_results/{0}',
+            save_root='/DATA/DATANAS2/zhangyip/sim_results',
+            # save_root='./sim_results',
+            idx=idx + bias,
+            # idx=0,
+            save_r=f'/DATA/DATANAS2/zhangyip/sim_results/{idx + bias}',
             num_instances=len(results),
             preprocess=release_objects
         )

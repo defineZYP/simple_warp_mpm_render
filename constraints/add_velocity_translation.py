@@ -18,7 +18,8 @@ def add_velocity_on_particles(
     end_time: float = 999.0,
     mix_type: int = False,
     region_params: list = None,
-    device: str = "cuda:0"
+    device: str = "cuda:0",
+    after=False,
 ):
     """
     给点增加一个速度，本身不受MPM里其他点作用，相当于有一个外力出现支持该质点出现这些物理现象
@@ -54,6 +55,10 @@ def add_velocity_on_particles(
 
     mask = modifier.mask.numpy()
     # print(mask.sum())
+    if len(region_params) == 2:
+        print("mask number:", mask.sum())
+    if after:
+        solver.after_particle_velocity_modifier_params.append(modifier)
     solver.particle_velocity_modifier_params.append(modifier)
 
     @wp.kernel
@@ -67,6 +72,8 @@ def add_velocity_on_particles(
             if velocity_modifier_params.mask[p] == 1:
                 state.particle_v[p] = velocity_modifier_params.velocity
     
+    if after:
+        solver.after_particle_velocity_modifiers.append(modify_particle_v_before_p2g)
     solver.particle_velocity_modifiers.append(modify_particle_v_before_p2g)
 
 def add_rotation_on_particles(

@@ -446,7 +446,7 @@ def g2p(state: MPMStateStruct, model: MPMModelStruct, dt: float):
 
         state.particle_tf[p] = new_v - state.particle_v[p]
         state.particle_v[p] = new_v
-        state.particle_x[p] = state.particle_x[p] + dt * new_v
+        # state.particle_x[p] = state.particle_x[p] + dt * new_v
         state.particle_C[p] = new_C
         I33 = wp.mat33(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0)
         F_tmp = (I33 + new_F * dt) * state.particle_F[p]
@@ -454,6 +454,12 @@ def g2p(state: MPMStateStruct, model: MPMModelStruct, dt: float):
 
         if model.update_cov_with_F:
             update_cov(state, p, new_F, dt)
+
+@wp.kernel
+def update_particle_position(state: MPMStateStruct, model: MPMModelStruct, dt: float):
+    p = wp.tid()
+    if state.particle_selection[p] == 0:
+        state.particle_x[p] = state.particle_x[p] + dt * state.particle_v[p]
 
 
 # compute (Kirchhoff) stress = stress(returnMap(F_trial))

@@ -52,8 +52,8 @@ if __name__ == "__main__":
         [
             {
                 'instance_type': 'mesh',
-                'path': '/DATA/DATANAS1/zhangyip/phy/warp-mpm/assets/objs/dragon.obj',
-                'cube_param': [0.7, 0.7, 0.7],
+                'path': './assets/objs/knife.obj',
+                'cube_param': [0.9, 0.9, 0.9],
                 'material': 'iron',
                 'center': [0.5, 0.5, 0.5]
             },
@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
     directory_to_save = f'./sim_results/{scene_name}'
 
-    num_frames = 24 * 5
+    num_frames = 1
 
     head_writer = imageio.get_writer(f'./sim_results/{scene_name}.mp4', fps=24)
     left_writer = imageio.get_writer(f'./sim_results/{scene_name}_left.mp4', fps=24)

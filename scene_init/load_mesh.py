@@ -53,7 +53,8 @@ def sample_mesh(
     cube_param: list,
     cube_delta: list,
     n: int,
-    device: str = 'cuda:0'
+    device: str = 'cuda:0',
+    put_on_bottom: bool = False
 ):
     m = MeshToParticles()
     m.particles = wp.zeros(
@@ -67,7 +68,8 @@ def sample_mesh(
         device=device
     )
     # print(obj_file)
-    mesh = trimesh.load(obj_file)
+    mesh = trimesh.load_mesh(obj_file)
+    # print(mesh.__dict__)
     mesh.process()
     bbox_min, bbox_max = mesh.bounds
     bbox_size = bbox_max - bbox_min
@@ -80,9 +82,18 @@ def sample_mesh(
     bbox_min, bbox_max = mesh.bounds
     translation = target_center - (bbox_min + bbox_max) / 2
 
+    # print(bbox_min, bbox_max)
+
     mesh.apply_translation(translation)
     bbox_min, bbox_max = mesh.bounds
-    # print(bbox_min, bbox_max)
+
+    if put_on_bottom:
+        bottom = target_center[1] - target_size[1] / 2.
+        # print(bottom, bbox_min[1])
+        mesh.apply_translation([0., bottom - bbox_min[1], 0.])
+        bbox_min, bbox_max = mesh.bounds
+        # print(bbox_min, bbox_max)
+    # print(center, bbox_min, bbox_max)
     # print(bbox_min / 2 + bbox_max / 2)
     # mesh.export('./output.obj')
 
@@ -133,6 +144,7 @@ def init_mesh(
     num_particles = []
     instances = []
     velocities = []
+    put_on_bottoms = []
 
     # 两轮，第一轮采样基本参数，第二轮获取最终结果
     for i_idx in range(len(mesh_pathes)):
@@ -141,6 +153,7 @@ def init_mesh(
         material = -1
         center = -1
         velocity = -1
+        put_on_bottom = False
         if (
             instance_params is not None and 
             isinstance(instance_params, list) and 
@@ -158,6 +171,8 @@ def init_mesh(
                 center = instance_param['center']
             if 'velocity' in instance_param:
                 velocity = instance_param['velocity']
+            if 'put_on_bottom' in instance_param:
+                put_on_bottom = True
 
         if cube_param == -1:
             cube_param = [random.uniform(0.01, 0.05), random.uniform(0.01, 0.05), random.uniform(0.01, 0.05)]
@@ -202,6 +217,7 @@ def init_mesh(
         cube_deltas.append([nx, ny, nz, dx, dy, dz])
         num_particle = nx * ny * nz
         num_particles.append(num_particle)
+        put_on_bottoms.append(put_on_bottom)
     
     total_particles = int(np.sum(num_particles)) + 1000 * len(mesh_pathes)
     position_vec = torch.zeros((total_particles, 3), dtype=torch.float32)
@@ -218,7 +234,8 @@ def init_mesh(
             cube_params[i_idx],
             cube_deltas[i_idx],
             num_particles[i_idx],
-            device=device
+            device=device,
+            put_on_bottom=put_on_bottoms[i_idx]
         )
         true_num_particles = _position_vec.shape[0]
         if true_num_particles > 0:
@@ -239,6 +256,7 @@ def init_mesh(
             })
             start_particle_idx = end_particle_idx
 
+    # print(centers, end_particle_idx)
     return position_vec[:end_particle_idx], velocity_vec[:end_particle_idx], volumn_vec[:end_particle_idx], instances, centers, cube_params, end_particle_idx
 
 if __name__ == "__main__":
