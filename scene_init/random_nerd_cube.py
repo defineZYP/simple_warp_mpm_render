@@ -93,7 +93,7 @@ def init_nerd_cube(
                 ]
         
         nerd_bounds.append(nerd_bound)
-
+        
         if cube_param == -1:
             cube_param = [random.uniform(0.01, 0.05), random.uniform(0.01, 0.05), random.uniform(0.01, 0.05)]
         cube_params.append(cube_param)

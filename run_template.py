@@ -87,7 +87,7 @@ def normal_simulation_once(
     os.makedirs(directory_to_save, exist_ok=True)
 
     with open(f'{save_root}/{scene_name}/scene.json', 'w') as f:
-        json.dump(instances, f)
+        json.dump(instances, f, indent=4)
 
     num_frames = 24 * 5
 

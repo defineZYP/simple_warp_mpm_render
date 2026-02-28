@@ -33,8 +33,8 @@ if __name__ == "__main__":
     # energy conservation
     args = parse_args()
     mode = args.mode
-    bias = mode * 100 + 1000
-    for idx in tqdm.tqdm(range(100), desc='movies', position=0, leave=False):
+    bias = mode * 100 + 1000 + 72
+    for idx in tqdm.tqdm(range(100 - 72), desc='movies', position=0, leave=False):
         # 随机采样1-3个物体，不给予初速度
         items = random.randint(1, 3)
         results = sample_boxes_3d(

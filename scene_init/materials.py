@@ -25,6 +25,7 @@ def get_random_material_from_range(material_range):
     return material
 
 jelly_material_params_range = {
+    'name': 'jelly',
     'material': 'jelly',
     'E': (1e3, 2e3),                                    # 杨氏模量，越大越硬
     'nu': (0.3, 0.35),                                  # 泊松比，越小越可压缩，越大越不可压缩
@@ -41,6 +42,7 @@ jelly_material_params_range = {
 }
 
 mud_material_params_range = {                              # looks similar to jelly
+    'name': 'mud',
     'material': 'jelly',
     'E': (7.5e2, 1e3),                                     # 杨氏模量，越大越硬
     'nu': (0.2, 0.25),                                     # 泊松比，越小越可压缩，越大越不可压缩
@@ -57,6 +59,7 @@ mud_material_params_range = {                              # looks similar to je
 }
 
 rubber_ball_material_params_range = {
+    'name': 'rubber',
     'material': 'jelly',
     'E': (1e5, 5e5),                                    # 杨氏模量，越大越硬
     'nu': (0.4, 0.45),                                  # 泊松比，越小越可压缩，越大越不可压缩
@@ -73,6 +76,7 @@ rubber_ball_material_params_range = {
 }
 
 slime_material_params_range = {                         # looks similar to jelly
+    'name': 'slime',
     'material': 'jelly',
     'E': (1e3, 2e3),                                  # 杨氏模量，越大越硬
     'nu': (0.2, 0.25),                                  # 泊松比，越小越可压缩，越大越不可压缩
@@ -90,6 +94,7 @@ slime_material_params_range = {                         # looks similar to jelly
 
 
 foam_material_params_range = {                          # looks similar to jelly
+    'name': 'foam',
     'material': 'foam',
     'E': (2e2, 4e2),                                    # 杨氏模量，越大越硬
     'nu': (0.2, 0.25),                                  # 泊松比，越小越可压缩，越大越不可压缩
@@ -108,6 +113,7 @@ foam_material_params_range = {                          # looks similar to jelly
 }
 
 sand_material_params_range = {                          # looks similar to jelly
+    'name': 'sand',
     'material': 'sand',
     'E': (5e4, 2e5),                                  # 杨氏模量，越大越硬
     'nu': (0.2, 0.225),                                 # 泊松比，越小越可压缩，越大越不可压缩
@@ -125,6 +131,7 @@ sand_material_params_range = {                          # looks similar to jelly
 }
 
 gold_material_params_range = {
+    'name': 'gold',
     'material': 'metal',
     'E': (7.5e6, 8e6),
     'nu': (0.4, 0.45),
@@ -163,6 +170,7 @@ gold_material_params_range = {
 # }
 
 silver_material_params_range = {
+    'name': 'silver',
     'material': 'metal',
     'E': (8.1e6, 8.5e6),
     'nu': (0.35, 0.4),
@@ -184,6 +192,7 @@ silver_material_params_range = {
 # iron_material_params_range = {'material': 'metal', 'E': 20630840.721, 'nu': 0.3237, 'yield_stress': 256841489.8631, 'xi': 0.01, 'hardening': 1.0, 'particle_dense': 2000000.0, 'rpic_damping': 0.2, 'density': 7870.0, 'g': [0.0, -9.8, 0.0], 'albedo': [0.4925, 0.4782, 0.4601], 'emission': [0.0, 0.0, 0.0], 'roughness': 0.4983, 'metallic': 0.8972, 'transmission': 0.0, 'ior': 0.2496}
 
 iron_material_params_range = {
+    'name': 'iron',
     'material': 'metal',
     'E': (2e8, 2.1e8),
     'nu': (0.29, 0.34),
@@ -203,6 +212,7 @@ iron_material_params_range = {
 }
 
 copper_material_params_range = {
+    'name': 'copper',
     'material': 'metal',
     'E': (1e8, 1.1e8),
     'nu': (0.34, 0.38),
@@ -222,6 +232,7 @@ copper_material_params_range = {
 }
 
 metal_material_params_range = {
+    'name': 'metal',
     'material': 'metal',
     'E': (1e6, 1e9),
     'mu': (0.3, 0.35),
@@ -241,6 +252,7 @@ metal_material_params_range = {
 }
 
 plasticine_material_params_range = {
+    'name': 'plasticine',
     'material': 'plasticine',
     'E': (1e6, 1e7),
     'mu': (0.25, 0.35),
@@ -260,7 +272,42 @@ plasticine_material_params_range = {
     'ior': (1.45, 1.55)
 }
 
+wood_material_params_range = {
+    'name': 'wood',
+    'material': 'metal',
+
+    # 等效各向同性近似（比真实顺纹方向略低，利于稳定）
+    'E': (5e6, 2e7),              # 0.5–2 GPa
+    
+    # 等效泊松比
+    'mu': (0.25, 0.35),           # 泊松比
+    
+    # 压缩屈服强度量级
+    'yield_stress': (2e5, 6e6),   # 20–60 MPa
+    
+    # 塑性参数（木材较脆）
+    'xi': 0.02,
+    'hardening': 1.,
+    'softening': 0.02,
+
+    # 密度（常见木材范围）
+    'density': (500, 800),       # kg/m³
+
+    # 数值稳定性相关
+    'rpic_damping': 0.02,
+    'g': [0.0, -4.9, 0.0],
+
+    # 渲染参数（偏木色）
+    'albedo': [(0.45, 0.75), (0.30, 0.55), (0.15, 0.35)],
+    'emission': [0.0, 0.0, 0.0],
+    'roughness': (0.6, 0.9),      # 木头较粗糙
+    'metallic': 0.0,
+    'transmission': (0.0, 0.02),
+    'ior': (1.50, 1.56)
+}
+
 carrot_material_params_range = {
+    'name': 'carrot',
     'material': 'plasticine',
     'E': (5e6, 1e7),
     'mu': (0.34, 0.36),
@@ -280,6 +327,7 @@ carrot_material_params_range = {
 }
 
 apple_material_params_range = {
+    'name': 'apple',
     'material': 'plasticine',
     'E': (3e6, 5e6),
     'mu': (0.3, 0.35),
@@ -299,6 +347,7 @@ apple_material_params_range = {
 }
 
 bread_material_params_range = {
+    'name': 'bread',
     'material': 'foam',
     'E': (6e4, 1e5),
     'mu': (0.125, 0.175),
@@ -318,6 +367,7 @@ bread_material_params_range = {
 }
 
 ground_material_params_range = {
+    'name': 'ground',
     'material': 'sand',
     'color': [0.72, 0.72, 0.72],
     'albedo': [0.72, 0.72, 0.72],
@@ -329,6 +379,7 @@ ground_material_params_range = {
 }
 
 fluid_material_params_range = {
+    'name': 'fluid',
     'material': 'fluid',
     'bulk_modulus': 2.2e6,              # 越小越像泥浆，越大越像水，真实的水的体积模量约2.2e9，为了数值稳定性，减小为1/1000
     'friction_angle': 0.0,              # 越小越像水，越大越像泥浆
@@ -344,6 +395,7 @@ fluid_material_params_range = {
 }
 
 red_ink_material_params_range = {
+    'name': 'red ink',
     'material': 'fluid',
     'bulk_modulus': 2.2e6,              # 越小越像泥浆，越大越像水，真实的水的体积模量约2.2e9，为了数值稳定性，减小为1/1000
     'friction_angle': 0.0,              # 越小越像水，越大越像泥浆
@@ -359,6 +411,7 @@ red_ink_material_params_range = {
 }
 
 blue_ink_material_params_range = {
+    'name': 'blue ink',
     'material': 'fluid',
     'bulk_modulus': 2.2e6,              # 越小越像泥浆，越大越像水，真实的水的体积模量约2.2e9，为了数值稳定性，减小为1/1000
     'friction_angle': 0.0,              # 越小越像水，越大越像泥浆
@@ -374,6 +427,7 @@ blue_ink_material_params_range = {
 }
 
 seawater_material_params_range = {
+    'name': 'seawater',
     'material': 'fluid',
     'bulk_modulus': 2.4e6,
     'friction_angle': 0.0,
@@ -388,6 +442,7 @@ seawater_material_params_range = {
 }
 
 ethanol_material_params_range = {
+    'name': 'ethanol',
     'material': 'fluid',
     'bulk_modulus': 8e5,
     'friction_angle': 0.0,
@@ -402,6 +457,7 @@ ethanol_material_params_range = {
 }
 
 glycerol_material_params_range = {
+    'name': 'glycerol',
     'material': 'fluid',
     'bulk_modulus': 4e6,
     'friction_angle': 0.0,
@@ -416,11 +472,13 @@ glycerol_material_params_range = {
 }
 
 mercury_material_params_range = {
+    'name': 'mercury',
     'material': 'fluid',
     'bulk_modulus': 1e7,
     'friction_angle': 0.,
     'g': [0., -4.9, 0.],
-    'density': 1.35e4,
+    # 'density': 1.35e4,
+    'density': 3.5e3,                    # avoid collapse
     'albedo': [0.75, 0.75, 0.75],
     'emission': [0., 0., 0.],
     'roughness': 0.01,
@@ -430,6 +488,7 @@ mercury_material_params_range = {
 }
 
 oil_material_params_range = {
+    'name': 'oil',
     'material': 'fluid',
     'bulk_modulus': 1.5e6,
     'friction_angle': 0.0,
@@ -467,6 +526,7 @@ materials_range = [
     glycerol_material_params_range,
     mercury_material_params_range,
     oil_material_params_range,
+    wood_material_params_range
     # ground_material_params_range
 ]
 
@@ -494,9 +554,30 @@ materials_mapping = {
     'glycerol': 20,
     'mercury': 21,
     'oil': 22,
+    'wood': 23
     # 'ground': 13
 }
 
 materials_trans_mapping = {}
 for k in materials_mapping:
     materials_trans_mapping[materials_mapping[k]] = k
+
+fluid_material_trans_mapping = {
+    0: 'fluid',
+    1: 'red_ink',
+    2: 'blue_ink',
+    3: 'seawater',
+    4: 'ethanol',
+    5: 'glycerol',
+    6: 'mercury',
+    7: 'oil'
+}
+
+solid_material_trans_mapping = {
+    0: 'jelly',
+    1: 'foam',
+    2: 'sand',
+    3: 'metal',
+    4: 'plasticine',
+    5: 'wood'
+}
