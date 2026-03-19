@@ -33,8 +33,9 @@ if __name__ == "__main__":
     # energy conservation
     args = parse_args()
     mode = args.mode
-    bias = mode * 100 + 1500
-    for idx in tqdm.tqdm(range(100), desc='movies', position=0, leave=False):
+    # bias = mode * 100 + 1500
+    bias = mode * 20 + 1900
+    for idx in tqdm.tqdm(range(20), desc='movies', position=0, leave=False):
         # 随机采样1-3个物体，不给予初速度
 
         scene_info = []

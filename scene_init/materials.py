@@ -259,7 +259,7 @@ plasticine_material_params_range = {
     'yield_stress': (1e5, 1e6),
     'xi': 0.05,
     'hardening': 0,
-    'softening': 0.05,
+    'softening': (0.04, 0.11),
     'density': (1200, 2000),
     # 'particle_dense': 2000000.0,
     'rpic_damping': 0.03,
@@ -514,8 +514,6 @@ materials_range = [
     silver_material_params_range,
     iron_material_params_range,
     copper_material_params_range,
-    metal_material_params_range,
-    plasticine_material_params_range,
     carrot_material_params_range,
     apple_material_params_range,
     bread_material_params_range,
@@ -526,7 +524,9 @@ materials_range = [
     glycerol_material_params_range,
     mercury_material_params_range,
     oil_material_params_range,
-    wood_material_params_range
+    wood_material_params_range,
+    metal_material_params_range,
+    plasticine_material_params_range,
     # ground_material_params_range
 ]
 
@@ -542,19 +542,19 @@ materials_mapping = {
     'silver': 8,
     'iron': 9,
     'copper': 10,
-    'metal': 11,
-    'plasticine': 12,
-    'carrot': 13,
-    'apple': 14,
-    'bread': 15,
-    'red_ink': 16,
-    'blue_ink': 17,
-    'seawater': 18,
-    'ethanol': 19,
-    'glycerol': 20,
-    'mercury': 21,
-    'oil': 22,
-    'wood': 23
+    'carrot': 11,
+    'apple': 12,
+    'bread': 13,
+    'red_ink': 14,
+    'blue_ink': 15,
+    'seawater': 16,
+    'ethanol': 17,
+    'glycerol': 18,
+    'mercury': 19,
+    'oil': 20,
+    'wood': 21,
+    'metal': 22,
+    'plasticine': 23,
     # 'ground': 13
 }
 
